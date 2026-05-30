@@ -11,7 +11,7 @@
 
 <div class="desktop">
 
-  <!-- ★追加：デスクトップアイコン -->
+  <!-- DESKTOP ICONS -->
   <div class="desktop-icons">
 
     <div class="icon" ondblclick="openApp('overview')">
@@ -39,7 +39,10 @@
   <!-- TASKBAR -->
   <div class="taskbar">
     <div class="start" onclick="toggleStart()">⊞</div>
-    <div class="task-title">CaptureMemo</div>
+
+    <!-- ★動的表示 -->
+    <div class="task-title" id="taskTitle"></div>
+
     <div class="lang" id="langBtn">EN</div>
   </div>
 
@@ -60,7 +63,6 @@
 
     <div class="window-body">
 
-      <!-- NAV -->
       <div class="nav">
         <div class="nav-item active" onclick="switchPage('overview')">Overview</div>
         <div class="nav-item" onclick="switchPage('download')">Download</div>
@@ -68,10 +70,8 @@
         <div class="nav-item" onclick="switchPage('info')">Info</div>
       </div>
 
-      <!-- CONTENT -->
       <div class="content">
 
-        <!-- OVERVIEW -->
         <div class="page active" id="overview">
           <h1>CaptureMemo</h1>
           <p data-i18n="desc"></p>
@@ -79,7 +79,6 @@
           <div class="env">Windows 10 / 11</div>
         </div>
 
-        <!-- DOWNLOAD -->
         <div class="page" id="download">
           <h2>Download</h2>
           <div class="box">
@@ -98,13 +97,11 @@
           </div>
         </div>
 
-        <!-- USAGE -->
         <div class="page" id="usage">
           <h2>Usage</h2>
           <div id="usageList"></div>
         </div>
 
-        <!-- INFO -->
         <div class="page" id="info">
           <h2>Information</h2>
 
