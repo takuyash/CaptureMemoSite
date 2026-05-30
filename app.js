@@ -36,10 +36,20 @@ const data = {
   }
 };
 
-/* PAGE SWITCH */
-function switchPage(id) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+/* PAGE SWITCH（★1個に統一） */
+function switchPage(pageId) {
+  document.querySelectorAll(".page").forEach(el => {
+    el.classList.remove("active");
+  });
+
+  document.getElementById(pageId).classList.add("active");
+
+  document.querySelectorAll(".nav-item").forEach(el => {
+    el.classList.remove("active");
+    if (el.getAttribute("onclick")?.includes(pageId)) {
+      el.classList.add("active");
+    }
+  });
 }
 
 /* START MENU */
@@ -48,9 +58,19 @@ function toggleStart() {
   menu.style.display = menu.style.display === "block" ? "none" : "block";
 }
 
-function openWindow(page) {
+/* ★アプリ起動 */
+function openApp(page) {
+  const win = document.getElementById("appWindow");
+
+  win.style.display = "block";
   switchPage(page);
+
   toggleStart();
+}
+
+/* CLOSE */
+function closeWindow() {
+  document.getElementById("appWindow").style.display = "none";
 }
 
 /* LANGUAGE */
@@ -62,6 +82,7 @@ document.getElementById("langBtn").onclick = () => {
 
 function render() {
   const d = data[lang];
+
   document.querySelector("[data-i18n='desc']").textContent = d.desc;
   document.querySelector("[data-i18n='license']").textContent = d.license;
   document.querySelector("[data-i18n='disclaimer']").textContent = d.disclaimer;
@@ -71,7 +92,7 @@ function render() {
     d.usage.map(x => `<div>• ${x}</div>`).join("");
 }
 
-/* DRAG WINDOW */
+/* DRAG */
 const win = document.getElementById("appWindow");
 const bar = document.getElementById("dragBar");
 
@@ -94,42 +115,4 @@ document.addEventListener("mouseup", () => {
   isDragging = false;
 });
 
-function switchPage(pageId) {
-  // ナビの状態リセット
-  document.querySelectorAll(".nav-item").forEach(el => {
-    el.classList.remove("active");
-  });
-
-  // ページの表示リセット
-  document.querySelectorAll(".page").forEach(el => {
-    el.classList.remove("active");
-  });
-
-  // 対象ページを表示
-  document.getElementById(pageId).classList.add("active");
-
-  // 対応するnavもactiveにする
-  document.querySelectorAll(".nav-item").forEach(el => {
-    if (el.textContent.toLowerCase().includes(pageId)) {
-      el.classList.add("active");
-    }
-  });
-}
-
 render();
-
-/* ★追加：×ボタンでウインドウを閉じる */
-function closeWindow() {
-  document.getElementById("appWindow").style.display = "none";
-}
-
-/* ★追加：アイコンからアプリ起動 */
-function openApp(page) {
-  const win = document.getElementById("appWindow");
-
-  // ウインドウを表示
-  win.style.display = "block";
-
-  // ページ切替
-  switchPage(page);
-}
