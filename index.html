@@ -21,6 +21,7 @@
   <!-- START MENU -->
   <div class="start-menu" id="startMenu">
     <div onclick="openWindow('overview')">Overview</div>
+    <div onclick="openWindow('download')">Download</div>
     <div onclick="openWindow('usage')">Usage</div>
     <div onclick="openWindow('info')">Information</div>
   </div>
@@ -40,6 +41,7 @@
       <!-- NAV -->
       <div class="nav">
         <div class="nav-item active" onclick="switchPage('overview')">Overview</div>
+        <div class="nav-item" onclick="switchPage('download')">Download</div>
         <div class="nav-item" onclick="switchPage('usage')">Usage</div>
         <div class="nav-item" onclick="switchPage('info')">Info</div>
       </div>
@@ -47,20 +49,46 @@
       <!-- CONTENT -->
       <div class="content">
 
+        <!-- OVERVIEW -->
         <div class="page active" id="overview">
           <h1>CaptureMemo</h1>
           <p data-i18n="desc"></p>
 
-          <img class="shot" src="assets/CaptureMemo.png"">
+          <img class="shot" src="assets/CaptureMemo.png">
 
           <div class="env">Windows 10 / 11</div>
         </div>
 
+
+<!-- DOWNLOAD -->
+<div class="page" id="download">
+  <h2>Download</h2>
+
+  <div class="box">
+    <p>最新バージョンはこちらからダウンロードできます。</p>
+
+    <p>
+      <a href="https://github.com/takuyash/CaptureMemo/releases" target="_blank">
+        GitHub Releases（CaptureMemo）
+      </a>
+    </p>
+
+    <p>
+      もしくはGitHub公式ページ：
+      <a href="https://github.com/takuyash" target="_blank">
+        GitHub Profile
+      </a>
+    </p>
+  </div>
+</div>
+
+        <!-- USAGE -->
         <div class="page" id="usage">
           <h2>Usage</h2>
           <div id="usageList"></div>
         </div>
 
+        <!-- INFO -->
         <div class="page" id="info">
           <h2>Information</h2>
 
