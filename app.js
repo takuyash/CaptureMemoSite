@@ -117,3 +117,8 @@ function switchPage(pageId) {
 }
 
 render();
+
+/* ★追加：×ボタンでウインドウを閉じる */
+function closeWindow() {
+  document.getElementById("appWindow").style.display = "none";
+}
