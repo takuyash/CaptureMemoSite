@@ -94,4 +94,26 @@ document.addEventListener("mouseup", () => {
   isDragging = false;
 });
 
+function switchPage(pageId) {
+  // ナビの状態リセット
+  document.querySelectorAll(".nav-item").forEach(el => {
+    el.classList.remove("active");
+  });
+
+  // ページの表示リセット
+  document.querySelectorAll(".page").forEach(el => {
+    el.classList.remove("active");
+  });
+
+  // 対象ページを表示
+  document.getElementById(pageId).classList.add("active");
+
+  // 対応するnavもactiveにする
+  document.querySelectorAll(".nav-item").forEach(el => {
+    if (el.textContent.toLowerCase().includes(pageId)) {
+      el.classList.add("active");
+    }
+  });
+}
+
 render();
