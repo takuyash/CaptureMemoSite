@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CaptureMemo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="desktop">
+
+  <!-- TASKBAR -->
+  <div class="taskbar">
+    <div class="start" onclick="toggleStart()">⊞</div>
+    <div class="task-title">CaptureMemo</div>
+    <div class="lang" id="langBtn">EN</div>
+  </div>
+
+  <!-- START MENU -->
+  <div class="start-menu" id="startMenu">
+    <div onclick="openWindow('overview')">Overview</div>
+    <div onclick="openWindow('usage')">Usage</div>
+    <div onclick="openWindow('info')">Information</div>
+  </div>
+
+  <!-- WINDOW -->
+  <div class="window" id="appWindow">
+
+    <div class="titlebar" id="dragBar">
+      <span>CaptureMemo</span>
+      <div class="controls">
+        <button onclick="closeWindow()">×</button>
+      </div>
+    </div>
+
+    <div class="window-body">
+
+      <!-- NAV -->
+      <div class="nav">
+        <div class="nav-item active" onclick="switchPage('overview')">Overview</div>
+        <div class="nav-item" onclick="switchPage('usage')">Usage</div>
+        <div class="nav-item" onclick="switchPage('info')">Info</div>
+      </div>
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <div class="page active" id="overview">
+          <h1>CaptureMemo</h1>
+          <p data-i18n="desc"></p>
+
+          <img class="shot" src="assets/CaptureMemo.png"">
+
+          <div class="env">Windows 10 / 11</div>
+        </div>
+
+        <div class="page" id="usage">
+          <h2>Usage</h2>
+          <div id="usageList"></div>
+        </div>
+
+        <div class="page" id="info">
+          <h2>Information</h2>
+
+          <div class="box">
+            <h3>Notice</h3>
+            <p>今後ここにお知らせを追加予定です。</p>
+          </div>
+
+          <div class="box">
+            <h3>License</h3>
+            <p data-i18n="license"></p>
+          </div>
+
+          <div class="box">
+            <h3>Disclaimer</h3>
+            <p data-i18n="disclaimer"></p>
+          </div>
+
+          <div class="box">
+            <h3>Support</h3>
+            <p data-i18n="support"></p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

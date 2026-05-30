@@ -1,0 +1,135 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: url("assets/bg.png") center/cover;
+  overflow: hidden;
+}
+
+/* DESKTOP */
+.desktop {
+  height: 100vh;
+  position: relative;
+}
+
+/* TASKBAR */
+.taskbar {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 42px;
+  background: rgba(20,20,20,0.85);
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.start {
+  width: 50px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.task-title {
+  flex: 1;
+}
+
+.lang {
+  width: 50px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* START MENU */
+.start-menu {
+  position: absolute;
+  bottom: 42px;
+  left: 0;
+  width: 220px;
+  background: rgba(30,30,30,0.95);
+  display: none;
+  color: white;
+}
+
+.start-menu div {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.start-menu div:hover {
+  background: #333;
+}
+
+/* WINDOW */
+.window {
+  position: absolute;
+  top: 60px;
+  left: 80px;
+  width: 900px;
+  height: 600px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* TITLE BAR */
+.titlebar {
+  height: 36px;
+  background: #0078d4;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px;
+  cursor: move;
+}
+
+/* BODY */
+.window-body {
+  display: flex;
+  height: calc(100% - 36px);
+}
+
+/* NAV */
+.nav {
+  width: 180px;
+  background: #ffffff;
+  border-right: 1px solid #ddd;
+}
+
+.nav-item {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background: #e6f2ff;
+}
+
+/* CONTENT */
+.content {
+  flex: 1;
+  padding: 16px;
+  overflow: auto;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.shot {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+}
+
+.box {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 10px;
+}
