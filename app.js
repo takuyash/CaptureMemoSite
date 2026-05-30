@@ -202,3 +202,75 @@ function updateClock() {
 
 setInterval(updateClock, 1000);
 updateClock();
+
+document.addEventListener("DOMContentLoaded", () => {
+  const clock = document.getElementById("clock");
+  const calendar = document.getElementById("calendar");
+
+  if (clock && calendar) {
+    clock.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (calendar.style.display === "block") {
+        calendar.style.display = "none";
+      } else {
+        renderCalendar();
+        calendar.style.display = "block";
+      }
+    });
+
+    // 外クリックで閉じる
+    document.addEventListener("click", () => {
+      calendar.style.display = "none";
+    });
+
+    calendar.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+  }
+});
+
+function renderCalendar() {
+  const calendar = document.getElementById("calendar");
+  if (!calendar) return;
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const lastDate = new Date(year, month + 1, 0).getDate();
+
+  const week = ["日","月","火","水","木","金","土"];
+
+  let html = `
+    <div class="calendar-header">
+      <span>${year} / ${month + 1}</span>
+    </div>
+    <div class="calendar-grid">
+  `;
+
+  // 曜日
+  week.forEach(w => {
+    html += `<div>${w}</div>`;
+  });
+
+  // 空白
+  for (let i = 0; i < firstDay; i++) {
+    html += `<div></div>`;
+  }
+
+  // 日付
+  for (let d = 1; d <= lastDate; d++) {
+    const isToday =
+      d === now.getDate() &&
+      month === new Date().getMonth() &&
+      year === new Date().getFullYear();
+
+    html += `<div class="${isToday ? "today" : ""}">${d}</div>`;
+  }
+
+  html += `</div>`;
+
+  calendar.innerHTML = html;
+}
