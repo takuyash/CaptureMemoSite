@@ -11,6 +11,31 @@
 
 <div class="desktop">
 
+  <!-- ★追加：デスクトップアイコン -->
+  <div class="desktop-icons">
+
+    <div class="icon" ondblclick="openApp('overview')">
+      📄
+      <div>Overview</div>
+    </div>
+
+    <div class="icon" ondblclick="openApp('download')">
+      ⬇️
+      <div>Download</div>
+    </div>
+
+    <div class="icon" ondblclick="openApp('usage')">
+      📘
+      <div>Usage</div>
+    </div>
+
+    <div class="icon" ondblclick="openApp('info')">
+      ℹ️
+      <div>Info</div>
+    </div>
+
+  </div>
+
   <!-- TASKBAR -->
   <div class="taskbar">
     <div class="start" onclick="toggleStart()">⊞</div>
@@ -53,34 +78,28 @@
         <div class="page active" id="overview">
           <h1>CaptureMemo</h1>
           <p data-i18n="desc"></p>
-
           <img class="shot" src="assets/CaptureMemo.png">
-
           <div class="env">Windows 10 / 11</div>
         </div>
 
-
-<!-- DOWNLOAD -->
-<div class="page" id="download">
-  <h2>Download</h2>
-
-  <div class="box">
-    <p>最新バージョンはこちらからダウンロードできます。</p>
-
-    <p>
-      <a href="https://github.com/takuyash/CaptureMemo/releases" target="_blank">
-        GitHub Releases（CaptureMemo）
-      </a>
-    </p>
-
-    <p>
-      もしくはGitHub公式ページ：
-      <a href="https://github.com/takuyash" target="_blank">
-        GitHub Profile
-      </a>
-    </p>
-  </div>
-</div>
+        <!-- DOWNLOAD -->
+        <div class="page" id="download">
+          <h2>Download</h2>
+          <div class="box">
+            <p>最新バージョンはこちらからダウンロードできます。</p>
+            <p>
+              <a href="https://github.com/takuyash/CaptureMemo/releases" target="_blank">
+                GitHub Releases（CaptureMemo）
+              </a>
+            </p>
+            <p>
+              もしくはGitHub公式ページ：
+              <a href="https://github.com/takuyash" target="_blank">
+                GitHub Profile
+              </a>
+            </p>
+          </div>
+        </div>
 
         <!-- USAGE -->
         <div class="page" id="usage">

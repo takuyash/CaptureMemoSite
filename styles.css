@@ -133,3 +133,37 @@ body {
   padding: 10px;
   margin-top: 10px;
 }
+
+/* ★追加：デスクトップアイコン */
+.desktop-icons {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: grid;
+  grid-template-columns: 80px;
+  gap: 15px;
+}
+
+.icon {
+  width: 80px;
+  height: 80px;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  font-size: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.icon div {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.icon:hover {
+  background: rgba(255,255,255,0.15);
+}

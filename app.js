@@ -122,3 +122,14 @@ render();
 function closeWindow() {
   document.getElementById("appWindow").style.display = "none";
 }
+
+/* ★追加：アイコンからアプリ起動 */
+function openApp(page) {
+  const win = document.getElementById("appWindow");
+
+  // ウインドウを表示
+  win.style.display = "block";
+
+  // ページ切替
+  switchPage(page);
+}
