@@ -174,3 +174,31 @@ document.addEventListener("DOMContentLoaded", () => {
     isDragging = false;
   });
 });
+
+
+/* =========================
+   時計表示（右下）
+========================= */
+function updateClock() {
+  const clock = document.getElementById("clock");
+  if (!clock) return;
+
+  const now = new Date();
+
+  const time = now.toLocaleTimeString("ja-JP", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+
+  const date = now.toLocaleDateString("ja-JP", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short"
+  });
+
+  clock.textContent = `${date} ${time}`;
+}
+
+setInterval(updateClock, 1000);
+updateClock();
