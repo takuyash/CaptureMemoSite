@@ -5,12 +5,15 @@ const data = {
     overview: "概要",
     download: "ダウンロード",
     usageTitle: "使い方",
-    info: "Info",
+    info: "インフォメーション",
 
-    desc: "スクショ・画像・テキストを常に横に置いて使えるメモアプリ",
+    desc: "スクショ・画像・テキストを常に最前面に置いて使えるメモアプリ",
 
-    env: "環境:Windows 10 / 11",
-
+    envTitle: "環境",
+    env: "Windows 10 / 11",
+    licenseTitle: "ライセンス",
+    license: "MIT License",
+    
     downloadTitle: "Download",
     downloadText: "最新バージョンはこちらからダウンロードできます。",
     githubProfile: "GitHub公式ページ：",
@@ -20,7 +23,7 @@ const data = {
     notice: "Notice",
     noticeText: "今後ここにお知らせを追加予定です。",
 
-    licenseTitle: "License",
+
     disclaimerTitle: "Disclaimer",
     supportTitle: "Support",
 
@@ -35,7 +38,7 @@ const data = {
       "自動保存(5秒間隔)"
     ],
 
-    license: "MIT License",
+
     disclaimer: "自己責任で使用してください",
     support: "Star / Watch歓迎",
 
@@ -48,10 +51,13 @@ const data = {
     usageTitle: "Usage",
     info: "Info",
 
-    desc: "A memo tool that keeps screenshots, images and text always visible",
-
-    env: "Environment:Windows 10 / 11",
-
+    desc: "A memo app that lets you keep screenshots, images, and text always on top while you work.",
+    
+    envTitle: "Environment",
+    env: "Windows 10 / 11",
+    licenseTitle: "License",
+    license: "MIT License",
+ 
     downloadTitle: "Download",
     downloadText: "You can download the latest version here.",
     githubProfile: "GitHub profile:",
@@ -61,7 +67,7 @@ const data = {
     notice: "Notice",
     noticeText: "Announcements will be added here in the future.",
 
-    licenseTitle: "License",
+
     disclaimerTitle: "Disclaimer",
     supportTitle: "Support",
 
@@ -76,7 +82,6 @@ const data = {
       "Auto save(5 seconds interval)"
     ],
 
-    license: "MIT License",
     disclaimer: "Use at your own risk",
     support: "GitHub Star appreciated",
 
