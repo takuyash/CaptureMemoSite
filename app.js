@@ -110,7 +110,7 @@ const functionDescription = [
       en: "Always stays on top of other windows."
     },
 
-    url: "https://github.com/takuyash/CaptureMemo/releases",
+    url: "https://github.com/takuyash/CaptureMemo/blob/main/README.md",
 
     linkText: {
       ja: "詳細はこちら",
@@ -131,6 +131,7 @@ const usageDescription = [
       ja: "下記サイトからダウンロードします",
       en: "You can download it from the website below."
     },
+    image: "assets/download.png",
 
     url: "https://github.com/takuyash/CaptureMemo/releases",
 
@@ -143,13 +144,15 @@ const usageDescription = [
     text: {
       ja: "任意の場所にzipファイルを解凍します",
       en: "Extract the ZIP file to any location."
-    }
+    },
+    image: "assets/thawing.png",
   },
   {
     text: {
       ja: "CaptureMemo.exeを実行して起動します",
       en: "Run CaptureMemo.exe"
-    }
+    },
+    image: "assets/execute.png",
   }
 ];
 
@@ -306,6 +309,19 @@ if (usageList) {
                     <a href="${desc.url}" target="_blank">
                       ${desc.linkText?.[lang] || ""}
                     </a>
+                  </div>
+                  `
+                  : ""
+              }
+
+              ${
+                desc.image
+                  ? `
+                  <div class="usage-image">
+                    <img
+                      src="${desc.image}"
+                      alt=""
+                    >
                   </div>
                   `
                   : ""
