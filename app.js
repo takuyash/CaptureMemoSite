@@ -248,13 +248,22 @@ if (usageList) {
 }
   
   const functionList = document.getElementById("functionList");
+//function-textに詳細を記載
+if (functionList) {
+  functionList.innerHTML =
+    d.function
+      .map((x, i) => `
+        <div class="function-box">
+          <div class="function-step">
+            ${i + 1} ${x.replace(/^\d+\.?\s*/, "")}
+          </div>
+          <div class="function-text">
 
-  if (functionList) {
-    functionList.innerHTML =
-      d.function
-        .map(x => `<div>• ${x}</div>`)
-        .join("");
-  }
+          </div>
+        </div>
+      `)
+      .join("");
+}
   
 const infoList =
   document.getElementById("infoList");
