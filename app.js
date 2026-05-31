@@ -231,12 +231,21 @@ function render() {
 
   const usageList = document.getElementById("usageList");
 
-  if (usageList) {
-    usageList.innerHTML =
-      d.usage
-        .map(x => `<div>• ${x}</div>`)
-        .join("");
-  }
+if (usageList) {
+  usageList.innerHTML =
+    d.usage
+      .map((x, i) => `
+        <div class="usage-box">
+          <div class="usage-step">
+            STEP ${i + 1}
+          </div>
+          <div class="usage-text">
+            ${x.replace(/^\d+\.?\s*/, "")}
+          </div>
+        </div>
+      `)
+      .join("");
+}
   
   const functionList = document.getElementById("functionList");
 
