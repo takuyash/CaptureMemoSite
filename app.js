@@ -4,6 +4,7 @@ const data = {
   ja: {
     overview: "概要",
     download: "ダウンロード",
+    functionTitle: "機能",
     usageTitle: "使い方",
     info: "インフォメーション",
 
@@ -27,6 +28,17 @@ const data = {
     disclaimerTitle: "Disclaimer",
     supportTitle: "Support",
 
+    function: [
+      "常に最前面表示",
+      "テキスト入力",
+      "スクショ貼り付け",
+      "ドラッグ&ドロップ",
+      "Ctrl+S 保存",
+      "Ctrl+F 検索",
+      "最大10タブ",
+      "自動保存(5秒間隔)"
+    ],
+
     usage: [
       "常に最前面表示",
       "テキスト入力",
@@ -48,6 +60,7 @@ const data = {
   en: {
     overview: "Overview",
     download: "Download",
+    functionTitle: "Function",
     usageTitle: "Usage",
     info: "Info",
 
@@ -70,6 +83,17 @@ const data = {
 
     disclaimerTitle: "Disclaimer",
     supportTitle: "Support",
+    
+     function: [
+      "Always on top",
+      "Text input",
+      "Paste screenshots",
+      "Drag & drop",
+      "Ctrl+S save",
+      "Ctrl+F search",
+      "10 tabs max",
+      "Auto save(5 seconds interval)"
+    ],
 
     usage: [
       "Always on top",
@@ -219,6 +243,15 @@ function render() {
 
   if (usageList) {
     usageList.innerHTML =
+      d.usage
+        .map(x => `<div>• ${x}</div>`)
+        .join("");
+  }
+  
+  const functionList = document.getElementById("functionList");
+
+  if (functionList) {
+    functionList.innerHTML =
       d.usage
         .map(x => `<div>• ${x}</div>`)
         .join("");

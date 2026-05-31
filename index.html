@@ -67,6 +67,7 @@
       <div class="nav">
         <div class="nav-item active" onclick="switchPage('overview')" data-i18n="overview"></div>
         <div class="nav-item" onclick="switchPage('download')" data-i18n="download"></div>
+        <div class="nav-item" onclick="switchPage('function')" data-i18n="functionTitle"></div>
         <div class="nav-item" onclick="switchPage('usage')" data-i18n="usageTitle"></div>
         <div class="nav-item" onclick="switchPage('info')" data-i18n="info"></div>
       </div>
@@ -106,6 +107,11 @@
               </a>
             </p>
           </div>
+        </div>
+        
+        <div class="page" id="function">
+          <h2 data-i18n="functionTitle"></h2>
+          <div id="functionList"></div>
         </div>
 
         <div class="page" id="usage">
