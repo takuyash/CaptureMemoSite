@@ -84,6 +84,45 @@ const data = {
   }
 };
 
+const infos = [
+  {
+    date: "2026-05-31",
+
+    title: {
+      ja: "CaptureMemo公式サイト公開",
+      en: "CaptureMemo Official Website Released"
+    },
+
+    body: {
+      ja: "CaptureMemoの公式サイトを公開しました。",
+      en: "The official website for CaptureMemo has been released."
+    }
+  },
+
+  {
+    date: "2026-04-4",
+
+    title: {
+      ja: "v0.4.0 リリース",
+      en: "v0.4.0 Released"
+    },
+
+    body: {
+      ja: "v0.4.0リリースを公開しました。",
+      en: "The v0.4.0 release is now available."
+    },
+
+    link: {
+      url: "https://github.com/takuyash/CaptureMemo/releases",
+
+      label: {
+        ja: "GitHub Releases",
+        en: "GitHub Releases"
+      }
+    }
+  }
+];
+
 /* =========================
    タスクバー表示制御
 ========================= */
@@ -179,6 +218,48 @@ function render() {
         .map(x => `<div>• ${x}</div>`)
         .join("");
   }
+  
+const infoList =
+  document.getElementById("infoList");
+
+if (infoList) {
+
+  infoList.innerHTML =
+    infos.map(info => `
+      <div class="box">
+
+        <div style="
+          color:#888;
+          font-size:12px;
+          margin-bottom:8px;
+        ">
+          ${info.date}
+        </div>
+
+        <h3>${info.title[lang]}</h3>
+
+        <div>
+          ${info.body[lang]}
+        </div>
+
+        ${
+          info.link
+            ? `
+            <p style="margin-top:10px;">
+              <a
+                href="${info.link.url}"
+                target="_blank"
+              >
+                ${info.link.label[lang]}
+              </a>
+            </p>
+            `
+            : ""
+        }
+
+      </div>
+    `).join("");
+}
 
   updateClock();
 
