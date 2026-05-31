@@ -38,11 +38,11 @@ const data = {
       "最大10タブ",
       "自動保存(5秒間隔)"
     ],
-
+    
     usage: [
-      "1 ダウンロード",
-      "2 解凍",
-      "3 CaptureMemo.exeを実行して起動"
+      "ダウンロード",
+      "解凍",
+      "CaptureMemo.exeを実行"
     ],
 
 
@@ -91,9 +91,9 @@ const data = {
     ],
 
     usage: [
-  "1. Download",
-  "2. Extract the archive",
-  "3. Run CaptureMemo.exe"
+  "Download",
+  "Extract the archive",
+  "Run CaptureMemo.exe"
     ],
 
     disclaimer: "Use at your own risk",
@@ -102,6 +102,56 @@ const data = {
     week: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
   }
 };
+
+const functionDescription = [
+  {
+    text: {
+      ja: "他のアプリを開いても常に最前面に表示されます。",
+      en: "Always stays on top of other windows."
+    },
+
+    url: "https://github.com/takuyash/CaptureMemo/releases",
+
+    linkText: {
+      ja: "詳細はこちら",
+      en: "Learn More"
+    }
+  },
+  {
+    text: {
+      ja: "メモとしてテキストを入力できます。",
+      en: "You can enter text notes."
+    }
+  }
+];
+
+const usageDescription = [
+  {
+    text: {
+      ja: "下記サイトからダウンロードします",
+      en: "You can download it from the website below."
+    },
+
+    url: "https://github.com/takuyash/CaptureMemo/releases",
+
+    linkText: {
+      ja: "詳細はこちら",
+      en: "Learn More"
+    }
+  },
+  {
+    text: {
+      ja: "任意の場所にzipファイルを解凍します",
+      en: "Extract the ZIP file to any location."
+    }
+  },
+  {
+    text: {
+      ja: "CaptureMemo.exeを実行して起動します",
+      en: "Run CaptureMemo.exe"
+    }
+  }
+];
 
 const infos = [
   {
@@ -234,34 +284,78 @@ function render() {
 if (usageList) {
   usageList.innerHTML =
     d.usage
-      .map((x, i) => `
-        <div class="usage-box">
-          <div class="usage-step">
-            STEP ${i + 1}
+      .map((x, i) => {
+
+        const desc =
+          usageDescription?.[i] || {};
+
+        return `
+          <div class="usage-box">
+
+            <div class="usage-step">
+              ${i + 1} ${x}
+            </div>
+
+            <div class="usage-text">
+              ${desc.text?.[lang] || ""}
+
+              ${
+                desc.url
+                  ? `
+                  <div class="usage-link">
+                    <a href="${desc.url}" target="_blank">
+                      ${desc.linkText?.[lang] || ""}
+                    </a>
+                  </div>
+                  `
+                  : ""
+              }
+
+            </div>
+
           </div>
-          <div class="usage-text">
-            ${x.replace(/^\d+\.?\s*/, "")}
-          </div>
-        </div>
-      `)
+        `;
+      })
       .join("");
 }
   
   const functionList = document.getElementById("functionList");
-//function-textに詳細を記載
+
 if (functionList) {
   functionList.innerHTML =
     d.function
-      .map((x, i) => `
-        <div class="function-box">
-          <div class="function-step">
-            ${i + 1} ${x.replace(/^\d+\.?\s*/, "")}
-          </div>
-          <div class="function-text">
+      .map((x, i) => {
+
+        const desc =
+          functionDescription?.[i] || {};
+
+        return `
+          <div class="function-box">
+
+            <div class="function-step">
+              ${i + 1} ${x}
+            </div>
+
+            <div class="function-text">
+              ${desc.text?.[lang] || ""}
+
+              ${
+                desc.url
+                  ? `
+                  <div class="function-link">
+                    <a href="${desc.url}" target="_blank">
+                      ${desc.linkText?.[lang] || ""}
+                    </a>
+                  </div>
+                  `
+                  : ""
+              }
+
+            </div>
 
           </div>
-        </div>
-      `)
+        `;
+      })
       .join("");
 }
   
