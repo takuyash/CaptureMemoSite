@@ -40,14 +40,9 @@ const data = {
     ],
 
     usage: [
-      "常に最前面表示",
-      "テキスト入力",
-      "スクショ貼り付け",
-      "ドラッグ&ドロップ",
-      "Ctrl+S 保存",
-      "Ctrl+F 検索",
-      "最大10タブ",
-      "自動保存(5秒間隔)"
+      "1 ダウンロード",
+      "2 解凍",
+      "3 CaptureMemo.exeを実行して起動"
     ],
 
 
@@ -96,14 +91,9 @@ const data = {
     ],
 
     usage: [
-      "Always on top",
-      "Text input",
-      "Paste screenshots",
-      "Drag & drop",
-      "Ctrl+S save",
-      "Ctrl+F search",
-      "10 tabs max",
-      "Auto save(5 seconds interval)"
+  "1. Download",
+  "2. Extract the archive",
+  "3. Run CaptureMemo.exe"
     ],
 
     disclaimer: "Use at your own risk",
@@ -252,7 +242,7 @@ function render() {
 
   if (functionList) {
     functionList.innerHTML =
-      d.usage
+      d.function
         .map(x => `<div>• ${x}</div>`)
         .join("");
   }
