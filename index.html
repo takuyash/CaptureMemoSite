@@ -16,22 +16,22 @@
 
     <div class="icon" ondblclick="openApp('overview')">
       📄
-      <div>Overview</div>
+      <div data-i18n="overview"></div>
     </div>
 
     <div class="icon" ondblclick="openApp('download')">
       ⬇️
-      <div>Download</div>
+      <div data-i18n="download"></div>
     </div>
 
     <div class="icon" ondblclick="openApp('usage')">
       📘
-      <div>Usage</div>
+      <div data-i18n="usageTitle"></div>
     </div>
 
     <div class="icon" ondblclick="openApp('info')">
       ℹ️
-      <div>Info</div>
+      <div data-i18n="info"></div>
     </div>
 
   </div>
@@ -40,7 +40,6 @@
   <div class="taskbar">
     <div class="start" onclick="toggleStart()">⊞</div>
 
-    <!-- ★動的表示 -->
     <div class="task-title" id="taskTitle"></div>
 
     <div class="lang" id="langBtn">EN</div>
@@ -66,10 +65,10 @@
     <div class="window-body">
 
       <div class="nav">
-        <div class="nav-item active" onclick="switchPage('overview')">Overview</div>
-        <div class="nav-item" onclick="switchPage('download')">Download</div>
-        <div class="nav-item" onclick="switchPage('usage')">Usage</div>
-        <div class="nav-item" onclick="switchPage('info')">Info</div>
+        <div class="nav-item active" onclick="switchPage('overview')" data-i18n="overview"></div>
+        <div class="nav-item" onclick="switchPage('download')" data-i18n="download"></div>
+        <div class="nav-item" onclick="switchPage('usage')" data-i18n="usageTitle"></div>
+        <div class="nav-item" onclick="switchPage('info')" data-i18n="info"></div>
       </div>
 
       <div class="content">
@@ -78,20 +77,23 @@
           <h1>CaptureMemo</h1>
           <p data-i18n="desc"></p>
           <img class="shot" src="assets/CaptureMemo.png">
-          <div class="env">Windows 10 / 11</div>
+          <div class="env" data-i18n="env"></div>
         </div>
 
         <div class="page" id="download">
-          <h2>Download</h2>
+          <h2 data-i18n="downloadTitle"></h2>
+
           <div class="box">
-            <p>最新バージョンはこちらからダウンロードできます。</p>
+            <p data-i18n="downloadText"></p>
+
             <p>
               <a href="https://github.com/takuyash/CaptureMemo/releases" target="_blank">
                 GitHub Releases（CaptureMemo）
               </a>
             </p>
+
             <p>
-              もしくはGitHub公式ページ：
+              <span data-i18n="githubProfile"></span>
               <a href="https://github.com/takuyash" target="_blank">
                 GitHub Profile
               </a>
@@ -100,30 +102,30 @@
         </div>
 
         <div class="page" id="usage">
-          <h2>Usage</h2>
+          <h2 data-i18n="usageTitle"></h2>
           <div id="usageList"></div>
         </div>
 
         <div class="page" id="info">
-          <h2>Information</h2>
+          <h2 data-i18n="informationTitle"></h2>
 
           <div class="box">
-            <h3>Notice</h3>
-            <p>今後ここにお知らせを追加予定です。</p>
+            <h3 data-i18n="notice"></h3>
+            <p data-i18n="noticeText"></p>
           </div>
 
           <div class="box">
-            <h3>License</h3>
+            <h3 data-i18n="licenseTitle"></h3>
             <p data-i18n="license"></p>
           </div>
 
           <div class="box">
-            <h3>Disclaimer</h3>
+            <h3 data-i18n="disclaimerTitle"></h3>
             <p data-i18n="disclaimer"></p>
           </div>
 
           <div class="box">
-            <h3>Support</h3>
+            <h3 data-i18n="supportTitle"></h3>
             <p data-i18n="support"></p>
           </div>
 

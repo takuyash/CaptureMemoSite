@@ -2,7 +2,28 @@ let lang = "ja";
 
 const data = {
   ja: {
+    overview: "概要",
+    download: "ダウンロード",
+    usageTitle: "使い方",
+    info: "Info",
+
     desc: "スクショ・画像・テキストを常に横に置いて使えるメモアプリ",
+
+    env: "環境:Windows 10 / 11",
+
+    downloadTitle: "Download",
+    downloadText: "最新バージョンはこちらからダウンロードできます。",
+    githubProfile: "GitHub公式ページ：",
+
+    informationTitle: "Information",
+
+    notice: "Notice",
+    noticeText: "今後ここにお知らせを追加予定です。",
+
+    licenseTitle: "License",
+    disclaimerTitle: "Disclaimer",
+    supportTitle: "Support",
+
     usage: [
       "常に最前面表示",
       "テキスト入力",
@@ -11,14 +32,39 @@ const data = {
       "Ctrl+S 保存",
       "Ctrl+F 検索",
       "最大10タブ",
-      "自動保存"
+      "自動保存(5秒間隔)"
     ],
+
     license: "MIT License",
     disclaimer: "自己責任で使用してください",
-    support: "Star / Watch歓迎"
+    support: "Star / Watch歓迎",
+
+    week: ["日", "月", "火", "水", "木", "金", "土"]
   },
+
   en: {
+    overview: "Overview",
+    download: "Download",
+    usageTitle: "Usage",
+    info: "Info",
+
     desc: "A memo tool that keeps screenshots, images and text always visible",
+
+    env: "Environment:Windows 10 / 11",
+
+    downloadTitle: "Download",
+    downloadText: "You can download the latest version here.",
+    githubProfile: "GitHub profile:",
+
+    informationTitle: "Information",
+
+    notice: "Notice",
+    noticeText: "Announcements will be added here in the future.",
+
+    licenseTitle: "License",
+    disclaimerTitle: "Disclaimer",
+    supportTitle: "Support",
+
     usage: [
       "Always on top",
       "Text input",
@@ -27,11 +73,14 @@ const data = {
       "Ctrl+S save",
       "Ctrl+F search",
       "10 tabs max",
-      "Auto save"
+      "Auto save(5 seconds interval)"
     ],
+
     license: "MIT License",
     disclaimer: "Use at your own risk",
-    support: "GitHub Star appreciated"
+    support: "GitHub Star appreciated",
+
+    week: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
   }
 };
 
@@ -57,6 +106,7 @@ function switchPage(pageId) {
 
   document.querySelectorAll(".nav-item").forEach(el => {
     el.classList.remove("active");
+
     if (el.getAttribute("onclick")?.includes(pageId)) {
       el.classList.add("active");
     }
@@ -70,7 +120,10 @@ function toggleStart() {
   const menu = document.getElementById("startMenu");
   if (!menu) return;
 
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
+  menu.style.display =
+    menu.style.display === "block"
+      ? "none"
+      : "block";
 }
 
 /* =========================
@@ -81,11 +134,15 @@ function openApp(page) {
   if (!win) return;
 
   win.style.display = "block";
+
   switchPage(page);
 
   updateTaskTitle(true);
 
-  toggleStart();
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
 }
 
 /* =========================
@@ -101,54 +158,79 @@ function closeWindow() {
 }
 
 /* =========================
-   言語切替
+   描画
+========================= */
+function render() {
+  const d = data[lang];
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.dataset.i18n;
+
+    if (d[key] !== undefined) {
+      el.textContent = d[key];
+    }
+  });
+
+  const usageList = document.getElementById("usageList");
+
+  if (usageList) {
+    usageList.innerHTML =
+      d.usage
+        .map(x => `<div>• ${x}</div>`)
+        .join("");
+  }
+
+  updateClock();
+
+  const calendar = document.getElementById("calendar");
+
+  if (
+    calendar &&
+    calendar.style.display === "block"
+  ) {
+    renderCalendar();
+  }
+}
+
+/* =========================
+   初期化
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
+
   const langBtn = document.getElementById("langBtn");
 
   if (langBtn) {
     langBtn.onclick = () => {
-      lang = lang === "ja" ? "en" : "ja";
-      langBtn.innerText = lang === "ja" ? "EN" : "JA";
+
+      lang = lang === "ja"
+        ? "en"
+        : "ja";
+
+      langBtn.innerText =
+        lang === "ja"
+          ? "EN"
+          : "JA";
+
       render();
     };
   }
 
   render();
 
-  // ★重要：初期状態同期（ここが今回の修正ポイント）
   const win = document.getElementById("appWindow");
 
-  const isOpen = win && getComputedStyle(win).display !== "none";
+  const isOpen =
+    win &&
+    getComputedStyle(win).display !== "none";
+
   updateTaskTitle(isOpen);
 });
-
-/* =========================
-   描画
-========================= */
-function render() {
-  const d = data[lang];
-
-  const desc = document.querySelector("[data-i18n='desc']");
-  const license = document.querySelector("[data-i18n='license']");
-  const disclaimer = document.querySelector("[data-i18n='disclaimer']");
-  const support = document.querySelector("[data-i18n='support']");
-
-  if (desc) desc.textContent = d.desc;
-  if (license) license.textContent = d.license;
-  if (disclaimer) disclaimer.textContent = d.disclaimer;
-  if (support) support.textContent = d.support;
-
-  const usageList = document.getElementById("usageList");
-  if (usageList) {
-    usageList.innerHTML = d.usage.map(x => `<div>• ${x}</div>`).join("");
-  }
-}
 
 /* =========================
    ドラッグ処理
 ========================= */
 document.addEventListener("DOMContentLoaded", () => {
+
   const win = document.getElementById("appWindow");
   const bar = document.getElementById("dragBar");
 
@@ -158,16 +240,26 @@ document.addEventListener("DOMContentLoaded", () => {
   let offsetX = 0;
   let offsetY = 0;
 
-  bar.addEventListener("mousedown", (e) => {
+  bar.addEventListener("mousedown", e => {
+
     isDragging = true;
-    offsetX = e.clientX - win.offsetLeft;
-    offsetY = e.clientY - win.offsetTop;
+
+    offsetX =
+      e.clientX - win.offsetLeft;
+
+    offsetY =
+      e.clientY - win.offsetTop;
   });
 
-  document.addEventListener("mousemove", (e) => {
+  document.addEventListener("mousemove", e => {
+
     if (!isDragging) return;
-    win.style.left = (e.clientX - offsetX) + "px";
-    win.style.top = (e.clientY - offsetY) + "px";
+
+    win.style.left =
+      (e.clientX - offsetX) + "px";
+
+    win.style.top =
+      (e.clientY - offsetY) + "px";
   });
 
   document.addEventListener("mouseup", () => {
@@ -175,73 +267,106 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-
 /* =========================
-   時計表示（右下）
+   時計表示
 ========================= */
 function updateClock() {
-  const clock = document.getElementById("clock");
+
+  const clock =
+    document.getElementById("clock");
+
   if (!clock) return;
+
+  const locale =
+    lang === "ja"
+      ? "ja-JP"
+      : "en-US";
 
   const now = new Date();
 
-  const time = now.toLocaleTimeString("ja-JP", {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  const time =
+    now.toLocaleTimeString(locale, {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
 
-  const date = now.toLocaleDateString("ja-JP", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    weekday: "short"
-  });
+  const date =
+    now.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "short"
+    });
 
-  clock.textContent = `${date} ${time}`;
+  clock.textContent =
+    `${date} ${time}`;
 }
 
 setInterval(updateClock, 1000);
 updateClock();
 
+/* =========================
+   カレンダー表示
+========================= */
 document.addEventListener("DOMContentLoaded", () => {
-  const clock = document.getElementById("clock");
-  const calendar = document.getElementById("calendar");
 
-  if (clock && calendar) {
-    clock.addEventListener("click", (e) => {
-      e.stopPropagation();
+  const clock =
+    document.getElementById("clock");
 
-      if (calendar.style.display === "block") {
-        calendar.style.display = "none";
-      } else {
-        renderCalendar();
-        calendar.style.display = "block";
-      }
-    });
+  const calendar =
+    document.getElementById("calendar");
 
-    // 外クリックで閉じる
-    document.addEventListener("click", () => {
+  if (!clock || !calendar) return;
+
+  clock.addEventListener("click", e => {
+
+    e.stopPropagation();
+
+    if (
+      calendar.style.display === "block"
+    ) {
       calendar.style.display = "none";
-    });
+    } else {
+      renderCalendar();
+      calendar.style.display = "block";
+    }
+  });
 
-    calendar.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
-  }
+  document.addEventListener("click", () => {
+    calendar.style.display = "none";
+  });
+
+  calendar.addEventListener("click", e => {
+    e.stopPropagation();
+  });
 });
 
+/* =========================
+   カレンダー描画
+========================= */
 function renderCalendar() {
-  const calendar = document.getElementById("calendar");
+
+  const calendar =
+    document.getElementById("calendar");
+
   if (!calendar) return;
 
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
 
-  const firstDay = new Date(year, month, 1).getDay();
-  const lastDate = new Date(year, month + 1, 0).getDate();
+  const year =
+    now.getFullYear();
 
-  const week = ["日","月","火","水","木","金","土"];
+  const month =
+    now.getMonth();
+
+  const firstDay =
+    new Date(year, month, 1).getDay();
+
+  const lastDate =
+    new Date(year, month + 1, 0).getDate();
+
+  const week =
+    data[lang].week;
 
   let html = `
     <div class="calendar-header">
@@ -250,27 +375,35 @@ function renderCalendar() {
     <div class="calendar-grid">
   `;
 
-  // 曜日
   week.forEach(w => {
     html += `<div>${w}</div>`;
   });
 
-  // 空白
   for (let i = 0; i < firstDay; i++) {
     html += `<div></div>`;
   }
 
-  // 日付
   for (let d = 1; d <= lastDate; d++) {
+
     const isToday =
       d === now.getDate() &&
-      month === new Date().getMonth() &&
-      year === new Date().getFullYear();
+      month === now.getMonth() &&
+      year === now.getFullYear();
 
-    html += `<div class="${isToday ? "today" : ""}">${d}</div>`;
+    html += `
+      <div class="${
+        isToday
+          ? "today"
+          : ""
+      }">
+        ${d}
+      </div>
+    `;
   }
 
-  html += `</div>`;
+  html += `
+    </div>
+  `;
 
   calendar.innerHTML = html;
 }
