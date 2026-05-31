@@ -16,7 +16,8 @@ const data = {
     license: "MIT License",
     DisclaimerTitle: "免責事項",
     Disclaimer: "本ソフトウェアを使用したことによって生じたいかなる損害についても、作者は一切の責任を負いません。自己責任でご利用ください。",
-    
+    TermsOfUseTitle: "利用条件",
+    TermsOfUse: "本ソフトウェアはフリーソフトです。個人利用・商用利用を問わず、無料で使用することができます。",
     downloadTitle: "Download",
     downloadText: "最新バージョンはこちらからダウンロードできます。",
     githubProfile: "GitHub公式ページ：",
@@ -69,6 +70,8 @@ const data = {
     license: "MIT License",
     DisclaimerTitle: "Disclaimer",
     Disclaimer: "The author assumes no responsibility or liability for any damages resulting from the use of this software. Please use it at your own risk.",
+    TermsOfUseTitle: "Terms of Use",
+    TermsOfUse: "This software is provided free of charge and may be used for both personal and commercial purposes.",
     
     downloadTitle: "Download",
     downloadText: "You can download the latest version here.",
