@@ -14,6 +14,8 @@ const data = {
     env: "Windows 10 / 11",
     licenseTitle: "ライセンス",
     license: "MIT License",
+    DisclaimerTitle: "免責事項",
+    Disclaimer: "本ソフトウェアを使用したことによって生じたいかなる損害についても、作者は一切の責任を負いません。自己責任でご利用ください。",
     
     downloadTitle: "Download",
     downloadText: "最新バージョンはこちらからダウンロードできます。",
@@ -65,7 +67,9 @@ const data = {
     env: "Windows 10 / 11",
     licenseTitle: "License",
     license: "MIT License",
- 
+    DisclaimerTitle: "Disclaimer",
+    Disclaimer: "The author assumes no responsibility or liability for any damages resulting from the use of this software. Please use it at your own risk.",
+    
     downloadTitle: "Download",
     downloadText: "You can download the latest version here.",
     githubProfile: "GitHub profile:",
