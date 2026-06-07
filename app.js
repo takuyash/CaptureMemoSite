@@ -165,13 +165,30 @@ const usageDescription = [
 
 const infos = [
   {
-    date: "2026-05-31",
+    date: "2026-06-07",
+    title: {
+      ja: "CaptureMemo v0.5.0をリリースしました",
+      en: "CaptureMemo v0.5.0 Released"
+    },
+    body: {
+      ja: "アプリデザインを修正しました。",
+      en: "modified the app design. "
+    },
+    link: {
+      url: "https://github.com/takuyash/CaptureMemo/releases",
 
+      label: {
+        ja: "GitHub Releases",
+        en: "GitHub Releases"
+      }
+    }
+  },
+  {
+    date: "2026-05-31",
     title: {
       ja: "CaptureMemo公式サイト公開",
       en: "CaptureMemo Official Website Released"
     },
-
     body: {
       ja: "CaptureMemoの公式サイトを公開しました。",
       en: "The official website for CaptureMemo has been released."
