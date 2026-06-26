@@ -16,6 +16,10 @@ const data = {
     paintEraser: "消しゴム",
     paintClear: "クリア",
     paintSize: "太さ",
+    winMinimize: "最小化",
+    winMaximize: "最大化",
+    winRestore: "元に戻す",
+    winClose: "閉じる",
     terminal: "ターミナル",
     terminalWelcome: "CaptureMemo Desktop Terminal v1.0",
     terminalHint: "'help' と入力するとコマンド一覧が表示されます。",
@@ -91,6 +95,10 @@ const data = {
     paintEraser: "Eraser",
     paintClear: "Clear",
     paintSize: "Size",
+    winMinimize: "Minimize",
+    winMaximize: "Maximize",
+    winRestore: "Restore",
+    winClose: "Close",
     terminal: "Terminal",
     terminalWelcome: "CaptureMemo Desktop Terminal v1.0",
     terminalHint: "Type 'help' to see available commands.",
@@ -262,40 +270,280 @@ const infos = [
 ];
 
 /* =========================
+   ウィンドウ管理
+========================= */
+const TASKBAR_HEIGHT = 42;
+let windowZIndex = 10;
+
+const WINDOW_CONFIG = [
+  { id: "appWindow", titleKey: "appCaptureMemo" },
+  { id: "calcWindow", titleKey: "calculator" },
+  { id: "notepadWindow", titleKey: "notepad" },
+  { id: "paintWindow", titleKey: "paint" },
+  { id: "terminalWindow", titleKey: "terminal" }
+];
+
+const windowState = Object.fromEntries(
+  WINDOW_CONFIG.map(({ id }) => [
+    id,
+    { status: "closed", bounds: null, beforeMinimize: "normal" }
+  ])
+);
+
+function getWindowEl(id) {
+  return document.getElementById(id);
+}
+
+function isWindowOpen(id) {
+  return windowState[id]?.status !== "closed";
+}
+
+function saveWindowBounds(id) {
+  const win = getWindowEl(id);
+  if (!win) return;
+
+  windowState[id].bounds = {
+    top: win.offsetTop,
+    left: win.offsetLeft,
+    width: win.offsetWidth,
+    height: win.offsetHeight
+  };
+}
+
+function bringWindowToFront(id) {
+  const win = getWindowEl(id);
+  if (!win) return;
+
+  windowZIndex += 1;
+  win.style.zIndex = windowZIndex;
+}
+
+function applyMaximize(id) {
+  const win = getWindowEl(id);
+  const state = windowState[id];
+  if (!win || !state) return;
+
+  if (state.status !== "maximized" && !state.bounds) {
+    saveWindowBounds(id);
+  }
+
+  win.style.display = "block";
+  win.style.top = "0px";
+  win.style.left = "0px";
+  win.style.width = "100%";
+  win.style.height = `calc(100vh - ${TASKBAR_HEIGHT}px)`;
+  win.classList.add("window-maximized");
+  state.status = "maximized";
+  bringWindowToFront(id);
+  updateMaximizeButton(id);
+}
+
+function restoreWindow(id) {
+  const win = getWindowEl(id);
+  const state = windowState[id];
+  if (!win || !state) return;
+
+  const bounds = state.bounds;
+  if (bounds) {
+    win.style.top = `${bounds.top}px`;
+    win.style.left = `${bounds.left}px`;
+    win.style.width = `${bounds.width}px`;
+    win.style.height = `${bounds.height}px`;
+  }
+
+  win.classList.remove("window-maximized");
+  state.bounds = null;
+  state.status = "normal";
+  updateMaximizeButton(id);
+}
+
+function toggleMaximize(id) {
+  const state = windowState[id];
+  if (!state || state.status === "closed" || state.status === "minimized") return;
+
+  if (state.status === "maximized") {
+    restoreWindow(id);
+  } else {
+    applyMaximize(id);
+  }
+
+  updateTaskbar();
+}
+
+function minimizeWindow(id) {
+  const win = getWindowEl(id);
+  const state = windowState[id];
+  if (!win || !state || state.status === "closed") return;
+
+  state.beforeMinimize =
+    state.status === "maximized" ? "maximized" : "normal";
+  win.style.display = "none";
+  state.status = "minimized";
+  updateTaskbar();
+}
+
+function focusWindow(id) {
+  const win = getWindowEl(id);
+  const state = windowState[id];
+  if (!win || !state || state.status === "closed") return;
+
+  win.style.display = "block";
+
+  if (state.status === "minimized") {
+    if (state.beforeMinimize === "maximized") {
+      applyMaximize(id);
+    } else {
+      state.status = "normal";
+      updateMaximizeButton(id);
+    }
+  }
+
+  bringWindowToFront(id);
+  updateTaskbar();
+
+  if (id === "notepadWindow") {
+    document.getElementById("notepadText")?.focus();
+  }
+
+  if (id === "terminalWindow") {
+    document.getElementById("terminalInput")?.focus();
+  }
+}
+
+function registerWindowOpen(id) {
+  const state = windowState[id];
+  if (!state) return;
+
+  if (state.status === "minimized") {
+    focusWindow(id);
+    return;
+  }
+
+  const win = getWindowEl(id);
+  if (!win) return;
+
+  win.style.display = "block";
+
+  if (state.status === "closed") {
+    state.status = "normal";
+    state.bounds = null;
+    win.classList.remove("window-maximized");
+    updateMaximizeButton(id);
+  }
+
+  bringWindowToFront(id);
+  updateTaskbar();
+}
+
+function closeManagedWindow(id) {
+  const win = getWindowEl(id);
+  const state = windowState[id];
+  if (!win || !state) return;
+
+  win.style.display = "none";
+  win.classList.remove("window-maximized");
+  state.status = "closed";
+  state.bounds = null;
+  state.beforeMinimize = "normal";
+  updateMaximizeButton(id);
+  updateTaskbar();
+}
+
+function updateMaximizeButton(id) {
+  const win = getWindowEl(id);
+  if (!win) return;
+
+  const btn = win.querySelector(".win-maximize");
+  if (!btn) return;
+
+  const maximized = windowState[id]?.status === "maximized";
+  btn.textContent = maximized ? "❐" : "□";
+  btn.title = data[lang][maximized ? "winRestore" : "winMaximize"];
+}
+
+function updateWindowControlLabels() {
+  document.querySelectorAll(".win-minimize").forEach(btn => {
+    btn.title = data[lang].winMinimize;
+  });
+
+  document.querySelectorAll(".win-close").forEach(btn => {
+    btn.title = data[lang].winClose;
+  });
+
+  WINDOW_CONFIG.forEach(({ id }) => {
+    updateMaximizeButton(id);
+  });
+}
+
+function updateTaskbar() {
+  const container = document.getElementById("taskApps");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  WINDOW_CONFIG.forEach(({ id, titleKey }) => {
+    const state = windowState[id];
+    if (!state || state.status === "closed") return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "task-app-btn";
+    btn.textContent = data[lang][titleKey];
+
+    if (state.status === "minimized") {
+      btn.classList.add("minimized");
+    } else {
+      btn.classList.add("active");
+    }
+
+    btn.onclick = () => {
+      if (state.status === "minimized") {
+        focusWindow(id);
+      } else {
+        bringWindowToFront(id);
+        updateTaskbar();
+      }
+    };
+
+    container.appendChild(btn);
+  });
+}
+
+function initWindowControls() {
+  document.querySelectorAll(".win-minimize").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      minimizeWindow(btn.dataset.window);
+    });
+  });
+
+  document.querySelectorAll(".win-maximize").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      toggleMaximize(btn.dataset.window);
+    });
+  });
+
+  document.querySelectorAll(".win-close").forEach(btn => {
+    btn.addEventListener("click", e => {
+      e.stopPropagation();
+      closeManagedWindow(btn.dataset.window);
+    });
+  });
+}
+
+function initWindowStates() {
+  const appWin = getWindowEl("appWindow");
+  if (appWin && getComputedStyle(appWin).display !== "none") {
+    windowState.appWindow.status = "normal";
+  }
+}
+
+/* =========================
    タスクバー表示制御
 ========================= */
 function updateTaskTitle() {
-  const title = document.getElementById("taskTitle");
-  if (!title) return;
-
-  const parts = [];
-  const appWin = document.getElementById("appWindow");
-  const calcWin = document.getElementById("calcWindow");
-  const notepadWin = document.getElementById("notepadWindow");
-  const paintWin = document.getElementById("paintWindow");
-  const terminalWin = document.getElementById("terminalWindow");
-
-  if (appWin && getComputedStyle(appWin).display !== "none") {
-    parts.push(data[lang].appCaptureMemo);
-  }
-
-  if (calcWin && getComputedStyle(calcWin).display !== "none") {
-    parts.push(data[lang].calculator);
-  }
-
-  if (notepadWin && getComputedStyle(notepadWin).display !== "none") {
-    parts.push(data[lang].notepad);
-  }
-
-  if (paintWin && getComputedStyle(paintWin).display !== "none") {
-    parts.push(data[lang].paint);
-  }
-
-  if (terminalWin && getComputedStyle(terminalWin).display !== "none") {
-    parts.push(data[lang].terminal);
-  }
-
-  title.textContent = parts.join(" | ");
+  updateTaskbar();
 }
 
 /* =========================
@@ -335,14 +583,8 @@ function toggleStart() {
    アプリ起動
 ========================= */
 function openApp(page) {
-  const win = document.getElementById("appWindow");
-  if (!win) return;
-
-  win.style.display = "block";
-
+  registerWindowOpen("appWindow");
   switchPage(page);
-
-  updateTaskTitle();
 
   const menu = document.getElementById("startMenu");
   if (menu) {
@@ -354,11 +596,7 @@ function openApp(page) {
    電卓を開く
 ========================= */
 function openCalculator() {
-  const win = document.getElementById("calcWindow");
-  if (!win) return;
-
-  win.style.display = "block";
-  updateTaskTitle();
+  registerWindowOpen("calcWindow");
 
   const menu = document.getElementById("startMenu");
   if (menu) {
@@ -370,27 +608,15 @@ function openCalculator() {
    電卓を閉じる
 ========================= */
 function closeCalculator() {
-  const win = document.getElementById("calcWindow");
-  if (!win) return;
-
-  win.style.display = "none";
-  updateTaskTitle();
+  closeManagedWindow("calcWindow");
 }
 
 /* =========================
    メモ帳を開く
 ========================= */
 function openNotepad() {
-  const win = document.getElementById("notepadWindow");
-  const textarea = document.getElementById("notepadText");
-  if (!win) return;
-
-  win.style.display = "block";
-  updateTaskTitle();
-
-  if (textarea) {
-    textarea.focus();
-  }
+  registerWindowOpen("notepadWindow");
+  document.getElementById("notepadText")?.focus();
 
   const menu = document.getElementById("startMenu");
   if (menu) {
@@ -402,22 +628,14 @@ function openNotepad() {
    メモ帳を閉じる
 ========================= */
 function closeNotepad() {
-  const win = document.getElementById("notepadWindow");
-  if (!win) return;
-
-  win.style.display = "none";
-  updateTaskTitle();
+  closeManagedWindow("notepadWindow");
 }
 
 /* =========================
    ペイントを開く
 ========================= */
 function openPaint() {
-  const win = document.getElementById("paintWindow");
-  if (!win) return;
-
-  win.style.display = "block";
-  updateTaskTitle();
+  registerWindowOpen("paintWindow");
 
   const menu = document.getElementById("startMenu");
   if (menu) {
@@ -429,23 +647,14 @@ function openPaint() {
    ペイントを閉じる
 ========================= */
 function closePaint() {
-  const win = document.getElementById("paintWindow");
-  if (!win) return;
-
-  win.style.display = "none";
-  updateTaskTitle();
+  closeManagedWindow("paintWindow");
 }
 
 /* =========================
    ターミナルを開く
 ========================= */
 function openTerminal() {
-  const win = document.getElementById("terminalWindow");
-  const input = document.getElementById("terminalInput");
-  if (!win) return;
-
-  win.style.display = "block";
-  updateTaskTitle();
+  registerWindowOpen("terminalWindow");
 
   if (!terminalBooted) {
     terminalBooted = true;
@@ -457,20 +666,14 @@ function openTerminal() {
     menu.style.display = "none";
   }
 
-  if (input) {
-    input.focus();
-  }
+  document.getElementById("terminalInput")?.focus();
 }
 
 /* =========================
    ターミナルを閉じる
 ========================= */
 function closeTerminal() {
-  const win = document.getElementById("terminalWindow");
-  if (!win) return;
-
-  win.style.display = "none";
-  updateTaskTitle();
+  closeManagedWindow("terminalWindow");
 }
 
 /* =========================
@@ -556,7 +759,6 @@ function terminalSetLanguage(code) {
   }
 
   render();
-  updateTaskTitle();
   appendTerminalLine(
     data[lang].terminalLangSet.replace("{lang}", lang.toUpperCase()),
     "success"
@@ -866,12 +1068,7 @@ function initPaintApp() {
    ウィンドウを閉じる
 ========================= */
 function closeWindow() {
-  const win = document.getElementById("appWindow");
-  if (!win) return;
-
-  win.style.display = "none";
-
-  updateTaskTitle();
+  closeManagedWindow("appWindow");
 }
 
 /* =========================
@@ -1156,6 +1353,9 @@ if (infoList) {
   ) {
     renderCalendar();
   }
+
+  updateWindowControlLabels();
+  updateTaskbar();
 }
 
 /* =========================
@@ -1183,7 +1383,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   render();
 
-  updateTaskTitle();
+  initWindowControls();
+  initWindowStates();
+  updateTaskbar();
 
   const notepadText = document.getElementById("notepadText");
   if (notepadText) {
@@ -1209,6 +1411,7 @@ function makeDraggable(win, bar) {
 
   bar.addEventListener("mousedown", e => {
     if (e.target.closest("button")) return;
+    if (win.classList.contains("window-maximized")) return;
 
     isDragging = true;
     offsetX = e.clientX - win.offsetLeft;
@@ -1253,6 +1456,7 @@ function makeResizable(win, options = {}) {
   win.addEventListener("mousedown", e => {
     const handle = e.target.closest(".resize-handle");
     if (!handle || !win.contains(handle)) return;
+    if (win.classList.contains("window-maximized")) return;
 
     e.preventDefault();
     e.stopPropagation();

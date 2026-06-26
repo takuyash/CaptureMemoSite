@@ -55,7 +55,7 @@
   <div class="taskbar">
     <div class="start" onclick="toggleStart()">⊞</div>
 
-    <div class="task-title" id="taskTitle"></div>
+    <div class="task-apps" id="taskApps"></div>
 
     <div class="lang" id="langBtn">EN</div>
     <div class="clock" id="clock"></div>
@@ -77,7 +77,9 @@
     <div class="titlebar" id="dragBar">
       <span>CaptureMemo</span>
       <div class="controls">
-        <button onclick="closeWindow()">×</button>
+        <button type="button" class="win-btn win-minimize" data-window="appWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="appWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="appWindow">×</button>
       </div>
     </div>
 
@@ -164,7 +166,9 @@
     <div class="titlebar" id="calcDragBar">
       <span data-i18n="calculator"></span>
       <div class="controls">
-        <button onclick="closeCalculator()">×</button>
+        <button type="button" class="win-btn win-minimize" data-window="calcWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="calcWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="calcWindow">×</button>
       </div>
     </div>
 
@@ -200,7 +204,9 @@
     <div class="titlebar" id="notepadDragBar">
       <span data-i18n="notepad"></span>
       <div class="controls">
-        <button onclick="closeNotepad()">×</button>
+        <button type="button" class="win-btn win-minimize" data-window="notepadWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="notepadWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="notepadWindow">×</button>
       </div>
     </div>
 
@@ -220,7 +226,9 @@
     <div class="titlebar" id="paintDragBar">
       <span data-i18n="paint"></span>
       <div class="controls">
-        <button onclick="closePaint()">×</button>
+        <button type="button" class="win-btn win-minimize" data-window="paintWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="paintWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="paintWindow">×</button>
       </div>
     </div>
 
@@ -248,7 +256,9 @@
     <div class="titlebar" id="terminalDragBar">
       <span data-i18n="terminal"></span>
       <div class="controls">
-        <button onclick="closeTerminal()">×</button>
+        <button type="button" class="win-btn win-minimize" data-window="terminalWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="terminalWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="terminalWindow">×</button>
       </div>
     </div>
 

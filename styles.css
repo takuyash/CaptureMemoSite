@@ -33,6 +33,43 @@ body {
   flex: 1;
 }
 
+.task-apps {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  overflow: hidden;
+}
+
+.task-app-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 4px 12px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 4px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.task-app-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.task-app-btn.active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.task-app-btn.minimized {
+  opacity: 0.65;
+}
+
 .lang {
   width: 50px;
   text-align: center;
@@ -141,6 +178,18 @@ body {
   cursor: sw-resize;
 }
 
+.window.window-maximized {
+  border-radius: 0;
+}
+
+.window.window-maximized .resize-handle {
+  display: none;
+}
+
+.window-maximized .win-maximize {
+  font-size: 14px;
+}
+
 /* TITLE BAR */
 .titlebar {
   height: 36px;
@@ -149,8 +198,22 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 10px;
+  padding: 0 0 0 10px;
   cursor: move;
+}
+
+.titlebar > span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.titlebar .controls {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  height: 36px;
 }
 
 /* BODY */
@@ -435,20 +498,31 @@ body {
   grid-column: span 2;
 }
 
-.titlebar .controls button {
+.titlebar .controls button,
+.titlebar .controls .win-btn {
   background: transparent;
   border: none;
   color: white;
-  font-size: 18px;
+  font-size: 12px;
   cursor: pointer;
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
+  width: 46px;
+  height: 36px;
   line-height: 1;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
 }
 
-.titlebar .controls button:hover {
-  background: rgba(255, 255, 255, 0.2);
+.titlebar .controls .win-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.titlebar .controls .win-close:hover {
+  background: #e81123;
+  color: white;
+}
+
+.titlebar .controls .win-maximize {
+  font-size: 11px;
 }
 
 /* NOTEPAD WINDOW */
