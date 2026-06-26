@@ -397,3 +397,94 @@ body {
   background: #fff;
   color: #1a1a1a;
 }
+
+/* PAINT WINDOW */
+.paint-window {
+  top: 100px;
+  left: 480px;
+  width: 504px;
+  height: auto;
+}
+
+.paint-body {
+  background: #f0f0f0;
+  padding: 10px;
+}
+
+.paint-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.paint-tool {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.paint-tool:hover {
+  background: #e8e8e8;
+}
+
+.paint-tool.active {
+  background: #0078d4;
+  color: #fff;
+  border-color: #006cbd;
+}
+
+.paint-color-label input[type="color"] {
+  width: 36px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.paint-size-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #333;
+}
+
+.paint-size-label input[type="range"] {
+  width: 80px;
+  cursor: pointer;
+}
+
+.paint-clear-btn {
+  margin-left: auto;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.paint-clear-btn:hover {
+  background: #ffe8e8;
+  border-color: #e0a0a0;
+}
+
+#paintCanvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: crosshair;
+  touch-action: none;
+}

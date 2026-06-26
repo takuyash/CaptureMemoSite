@@ -62,6 +62,7 @@
     <div onclick="openApp('overview')">CaptureMemo</div>
     <div onclick="openCalculator()" data-i18n="calculator"></div>
     <div onclick="openNotepad()" data-i18n="notepad"></div>
+    <div onclick="openPaint()" data-i18n="paint"></div>
   </div>
 
   <!-- WINDOW -->
@@ -203,6 +204,34 @@
         class="notepad-textarea"
         spellcheck="false"
       ></textarea>
+    </div>
+
+  </div>
+
+  <!-- PAINT WINDOW -->
+  <div class="window paint-window" id="paintWindow" style="display:none;">
+
+    <div class="titlebar" id="paintDragBar">
+      <span data-i18n="paint"></span>
+      <div class="controls">
+        <button onclick="closePaint()">×</button>
+      </div>
+    </div>
+
+    <div class="paint-body">
+      <div class="paint-toolbar">
+        <button type="button" class="paint-tool active" id="paintBrushBtn" onclick="setPaintTool('brush')" data-i18n="paintBrush"></button>
+        <button type="button" class="paint-tool" id="paintEraserBtn" onclick="setPaintTool('eraser')" data-i18n="paintEraser"></button>
+        <label class="paint-color-label">
+          <input type="color" id="paintColor" value="#000000" onchange="setPaintColor(this.value)">
+        </label>
+        <label class="paint-size-label">
+          <span data-i18n="paintSize"></span>
+          <input type="range" id="paintSize" min="1" max="24" value="4" oninput="setPaintLineWidth(this.value)">
+        </label>
+        <button type="button" class="paint-clear-btn" onclick="clearPaintCanvas()" data-i18n="paintClear"></button>
+      </div>
+      <canvas id="paintCanvas" width="480" height="300"></canvas>
     </div>
 
   </div>
