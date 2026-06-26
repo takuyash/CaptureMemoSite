@@ -352,10 +352,12 @@ body {
   top: 120px;
   left: 200px;
   width: 280px;
-  height: auto;
+  height: 380px;
 }
 
 .calculator-body {
+  height: calc(100% - 36px);
+  box-sizing: border-box;
   padding: 12px;
   background: #f0f0f0;
 }
@@ -482,12 +484,16 @@ body {
   top: 100px;
   left: 480px;
   width: 504px;
-  height: auto;
+  height: 400px;
 }
 
 .paint-body {
+  height: calc(100% - 36px);
+  box-sizing: border-box;
   background: #f0f0f0;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .paint-toolbar {
@@ -559,8 +565,10 @@ body {
 
 #paintCanvas {
   display: block;
+  flex: 1;
+  min-height: 120px;
   width: 100%;
-  height: auto;
+  height: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
   background: #fff;

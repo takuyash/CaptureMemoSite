@@ -1313,25 +1313,17 @@ function makeResizable(win, options = {}) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const appWindow = document.getElementById("appWindow");
-  makeDraggable(appWindow, document.getElementById("dragBar"));
-  makeResizable(appWindow);
-  makeDraggable(
-    document.getElementById("calcWindow"),
-    document.getElementById("calcDragBar")
-  );
-  makeDraggable(
-    document.getElementById("notepadWindow"),
-    document.getElementById("notepadDragBar")
-  );
-  makeDraggable(
-    document.getElementById("paintWindow"),
-    document.getElementById("paintDragBar")
-  );
-  makeDraggable(
-    document.getElementById("terminalWindow"),
-    document.getElementById("terminalDragBar")
-  );
+  [
+    { id: "appWindow", bar: "dragBar", minWidth: 480, minHeight: 280 },
+    { id: "calcWindow", bar: "calcDragBar", minWidth: 240, minHeight: 320 },
+    { id: "notepadWindow", bar: "notepadDragBar", minWidth: 280, minHeight: 200 },
+    { id: "paintWindow", bar: "paintDragBar", minWidth: 320, minHeight: 280 },
+    { id: "terminalWindow", bar: "terminalDragBar", minWidth: 360, minHeight: 240 }
+  ].forEach(({ id, bar, minWidth, minHeight }) => {
+    const win = document.getElementById(id);
+    makeDraggable(win, document.getElementById(bar));
+    makeResizable(win, { minWidth, minHeight });
+  });
 });
 
 /* =========================
