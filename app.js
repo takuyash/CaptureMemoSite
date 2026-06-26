@@ -1227,11 +1227,95 @@ function makeDraggable(win, bar) {
   });
 }
 
+function makeResizable(win, options = {}) {
+  if (!win) return;
+
+  const minWidth = options.minWidth ?? 480;
+  const minHeight = options.minHeight ?? 280;
+  const directions = ["n", "s", "e", "w", "ne", "nw", "se", "sw"];
+
+  directions.forEach(dir => {
+    const handle = document.createElement("div");
+    handle.className = `resize-handle resize-${dir}`;
+    handle.dataset.dir = dir;
+    win.appendChild(handle);
+  });
+
+  let resizing = false;
+  let direction = "";
+  let startX = 0;
+  let startY = 0;
+  let startWidth = 0;
+  let startHeight = 0;
+  let startLeft = 0;
+  let startTop = 0;
+
+  win.addEventListener("mousedown", e => {
+    const handle = e.target.closest(".resize-handle");
+    if (!handle || !win.contains(handle)) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    resizing = true;
+    direction = handle.dataset.dir;
+    startX = e.clientX;
+    startY = e.clientY;
+    startWidth = win.offsetWidth;
+    startHeight = win.offsetHeight;
+    startLeft = win.offsetLeft;
+    startTop = win.offsetTop;
+
+    document.body.style.userSelect = "none";
+  });
+
+  document.addEventListener("mousemove", e => {
+    if (!resizing) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    let newWidth = startWidth;
+    let newHeight = startHeight;
+    let newLeft = startLeft;
+    let newTop = startTop;
+
+    if (direction.includes("e")) {
+      newWidth = Math.max(minWidth, startWidth + dx);
+    }
+
+    if (direction.includes("w")) {
+      newWidth = Math.max(minWidth, startWidth - dx);
+      newLeft = startLeft + startWidth - newWidth;
+    }
+
+    if (direction.includes("s")) {
+      newHeight = Math.max(minHeight, startHeight + dy);
+    }
+
+    if (direction.includes("n")) {
+      newHeight = Math.max(minHeight, startHeight - dy);
+      newTop = startTop + startHeight - newHeight;
+    }
+
+    win.style.width = `${newWidth}px`;
+    win.style.height = `${newHeight}px`;
+    win.style.left = `${newLeft}px`;
+    win.style.top = `${newTop}px`;
+  });
+
+  document.addEventListener("mouseup", () => {
+    if (!resizing) return;
+
+    resizing = false;
+    document.body.style.userSelect = "";
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  makeDraggable(
-    document.getElementById("appWindow"),
-    document.getElementById("dragBar")
-  );
+  const appWindow = document.getElementById("appWindow");
+  makeDraggable(appWindow, document.getElementById("dragBar"));
+  makeResizable(appWindow);
   makeDraggable(
     document.getElementById("calcWindow"),
     document.getElementById("calcDragBar")

@@ -72,6 +72,75 @@ body {
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
 }
 
+.window-resizable .resize-handle {
+  position: absolute;
+  z-index: 20;
+}
+
+.window-resizable .resize-n {
+  top: 0;
+  left: 10px;
+  right: 10px;
+  height: 6px;
+  cursor: n-resize;
+}
+
+.window-resizable .resize-s {
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+  height: 6px;
+  cursor: s-resize;
+}
+
+.window-resizable .resize-e {
+  right: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 6px;
+  cursor: e-resize;
+}
+
+.window-resizable .resize-w {
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 6px;
+  cursor: w-resize;
+}
+
+.window-resizable .resize-ne {
+  top: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  cursor: ne-resize;
+}
+
+.window-resizable .resize-nw {
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nw-resize;
+}
+
+.window-resizable .resize-se {
+  bottom: 0;
+  right: 0;
+  width: 14px;
+  height: 14px;
+  cursor: se-resize;
+}
+
+.window-resizable .resize-sw {
+  bottom: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  cursor: sw-resize;
+}
+
 /* TITLE BAR */
 .titlebar {
   height: 36px;
