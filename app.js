@@ -7,6 +7,7 @@ const data = {
     functionTitle: "機能",
     usageTitle: "使い方",
     info: "インフォメーション",
+    calculator: "電卓",
 
     desc: "スクショ・画像・テキストを常に最前面に置いて使えるメモアプリ",
 
@@ -61,6 +62,7 @@ const data = {
     functionTitle: "Function",
     usageTitle: "Usage",
     info: "Info",
+    calculator: "Calculator",
 
     desc: "A memo app that lets you keep screenshots, images, and text always on top while you work.",
     
@@ -222,10 +224,23 @@ const infos = [
 /* =========================
    タスクバー表示制御
 ========================= */
-function updateTaskTitle(isOpen) {
+function updateTaskTitle() {
   const title = document.getElementById("taskTitle");
   if (!title) return;
-  title.textContent = isOpen ? "CaptureMemo" : "";
+
+  const parts = [];
+  const appWin = document.getElementById("appWindow");
+  const calcWin = document.getElementById("calcWindow");
+
+  if (appWin && getComputedStyle(appWin).display !== "none") {
+    parts.push("CaptureMemo");
+  }
+
+  if (calcWin && getComputedStyle(calcWin).display !== "none") {
+    parts.push(data[lang].calculator);
+  }
+
+  title.textContent = parts.join(" | ");
 }
 
 /* =========================
@@ -272,12 +287,39 @@ function openApp(page) {
 
   switchPage(page);
 
-  updateTaskTitle(true);
+  updateTaskTitle();
 
   const menu = document.getElementById("startMenu");
   if (menu) {
     menu.style.display = "none";
   }
+}
+
+/* =========================
+   電卓を開く
+========================= */
+function openCalculator() {
+  const win = document.getElementById("calcWindow");
+  if (!win) return;
+
+  win.style.display = "block";
+  updateTaskTitle();
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+}
+
+/* =========================
+   電卓を閉じる
+========================= */
+function closeCalculator() {
+  const win = document.getElementById("calcWindow");
+  if (!win) return;
+
+  win.style.display = "none";
+  updateTaskTitle();
 }
 
 /* =========================
@@ -289,7 +331,125 @@ function closeWindow() {
 
   win.style.display = "none";
 
-  updateTaskTitle(false);
+  updateTaskTitle();
+}
+
+/* =========================
+   電卓ロジック
+========================= */
+const calcState = {
+  display: "0",
+  prev: null,
+  operator: null,
+  waiting: false
+};
+
+function calcUpdateDisplay() {
+  const el = document.getElementById("calcDisplay");
+  if (el) el.value = calcState.display;
+}
+
+function calcDigit(d) {
+  if (calcState.display === "Error") {
+    calcClear();
+  }
+
+  if (calcState.waiting) {
+    calcState.display = d;
+    calcState.waiting = false;
+  } else {
+    calcState.display =
+      calcState.display === "0"
+        ? d
+        : calcState.display + d;
+  }
+  calcUpdateDisplay();
+}
+
+function calcDecimal() {
+  if (calcState.display === "Error") {
+    calcClear();
+  }
+
+  if (calcState.waiting) {
+    calcState.display = "0.";
+    calcState.waiting = false;
+  } else if (!calcState.display.includes(".")) {
+    calcState.display += ".";
+  }
+  calcUpdateDisplay();
+}
+
+function calcClear() {
+  calcState.display = "0";
+  calcState.prev = null;
+  calcState.operator = null;
+  calcState.waiting = false;
+  calcUpdateDisplay();
+}
+
+function calcBackspace() {
+  if (calcState.waiting) return;
+
+  if (calcState.display.length <= 1 ||
+      (calcState.display.length === 2 && calcState.display.startsWith("-"))) {
+    calcState.display = "0";
+  } else {
+    calcState.display = calcState.display.slice(0, -1);
+  }
+  calcUpdateDisplay();
+}
+
+function calcCompute(a, b, op) {
+  switch (op) {
+    case "+": return a + b;
+    case "-": return a - b;
+    case "*": return a * b;
+    case "/":
+      if (b === 0) return "Error";
+      return a / b;
+    default: return b;
+  }
+}
+
+function calcFormatResult(value) {
+  if (value === "Error") return "Error";
+  const rounded = Math.round(value * 1e10) / 1e10;
+  return String(rounded);
+}
+
+function calcOperator(op) {
+  if (calcState.display === "Error") {
+    calcClear();
+    return;
+  }
+
+  const current = parseFloat(calcState.display);
+
+  if (calcState.operator !== null && !calcState.waiting) {
+    const result = calcCompute(calcState.prev, current, calcState.operator);
+    calcState.display = calcFormatResult(result);
+    calcState.prev = result === "Error" ? null : result;
+  } else {
+    calcState.prev = current;
+  }
+
+  calcState.operator = op;
+  calcState.waiting = true;
+  calcUpdateDisplay();
+}
+
+function calcEquals() {
+  if (calcState.operator === null || calcState.waiting) return;
+
+  const current = parseFloat(calcState.display);
+  const result = calcCompute(calcState.prev, current, calcState.operator);
+
+  calcState.display = calcFormatResult(result);
+  calcState.prev = null;
+  calcState.operator = null;
+  calcState.waiting = true;
+  calcUpdateDisplay();
 }
 
 /* =========================
@@ -478,23 +638,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   render();
 
-  const win = document.getElementById("appWindow");
-
-  const isOpen =
-    win &&
-    getComputedStyle(win).display !== "none";
-
-  updateTaskTitle(isOpen);
+  updateTaskTitle();
 });
 
 /* =========================
    ドラッグ処理
 ========================= */
-document.addEventListener("DOMContentLoaded", () => {
-
-  const win = document.getElementById("appWindow");
-  const bar = document.getElementById("dragBar");
-
+function makeDraggable(win, bar) {
   if (!win || !bar) return;
 
   let isDragging = false;
@@ -502,30 +652,34 @@ document.addEventListener("DOMContentLoaded", () => {
   let offsetY = 0;
 
   bar.addEventListener("mousedown", e => {
+    if (e.target.closest("button")) return;
 
     isDragging = true;
-
-    offsetX =
-      e.clientX - win.offsetLeft;
-
-    offsetY =
-      e.clientY - win.offsetTop;
+    offsetX = e.clientX - win.offsetLeft;
+    offsetY = e.clientY - win.offsetTop;
   });
 
   document.addEventListener("mousemove", e => {
-
     if (!isDragging) return;
 
-    win.style.left =
-      (e.clientX - offsetX) + "px";
-
-    win.style.top =
-      (e.clientY - offsetY) + "px";
+    win.style.left = (e.clientX - offsetX) + "px";
+    win.style.top = (e.clientY - offsetY) + "px";
   });
 
   document.addEventListener("mouseup", () => {
     isDragging = false;
   });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  makeDraggable(
+    document.getElementById("appWindow"),
+    document.getElementById("dragBar")
+  );
+  makeDraggable(
+    document.getElementById("calcWindow"),
+    document.getElementById("calcDragBar")
+  );
 });
 
 /* =========================

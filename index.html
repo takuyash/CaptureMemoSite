@@ -60,6 +60,7 @@
   <!-- START MENU -->
   <div class="start-menu" id="startMenu">
     <div onclick="openApp('overview')">CaptureMemo</div>
+    <div onclick="openCalculator()" data-i18n="calculator"></div>
   </div>
 
   <!-- WINDOW -->
@@ -147,6 +148,42 @@
       </div>
 
     </div>
+  </div>
+
+  <!-- CALCULATOR WINDOW -->
+  <div class="window calculator-window" id="calcWindow" style="display:none;">
+
+    <div class="titlebar" id="calcDragBar">
+      <span data-i18n="calculator"></span>
+      <div class="controls">
+        <button onclick="closeCalculator()">×</button>
+      </div>
+    </div>
+
+    <div class="calculator-body">
+      <input type="text" class="calc-display" id="calcDisplay" readonly value="0">
+      <div class="calc-buttons">
+        <button class="calc-btn calc-btn-fn" onclick="calcClear()">C</button>
+        <button class="calc-btn calc-btn-fn" onclick="calcBackspace()">⌫</button>
+        <button class="calc-btn calc-btn-op" onclick="calcOperator('/')">÷</button>
+        <button class="calc-btn calc-btn-op" onclick="calcOperator('*')">×</button>
+        <button class="calc-btn" onclick="calcDigit('7')">7</button>
+        <button class="calc-btn" onclick="calcDigit('8')">8</button>
+        <button class="calc-btn" onclick="calcDigit('9')">9</button>
+        <button class="calc-btn calc-btn-op" onclick="calcOperator('-')">−</button>
+        <button class="calc-btn" onclick="calcDigit('4')">4</button>
+        <button class="calc-btn" onclick="calcDigit('5')">5</button>
+        <button class="calc-btn" onclick="calcDigit('6')">6</button>
+        <button class="calc-btn calc-btn-op" onclick="calcOperator('+')">+</button>
+        <button class="calc-btn" onclick="calcDigit('1')">1</button>
+        <button class="calc-btn" onclick="calcDigit('2')">2</button>
+        <button class="calc-btn" onclick="calcDigit('3')">3</button>
+        <button class="calc-btn calc-btn-eq" onclick="calcEquals()">=</button>
+        <button class="calc-btn calc-btn-zero" onclick="calcDigit('0')">0</button>
+        <button class="calc-btn" onclick="calcDecimal()">.</button>
+      </div>
+    </div>
+
   </div>
 
 </div>
