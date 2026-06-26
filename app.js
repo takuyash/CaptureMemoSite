@@ -16,6 +16,18 @@ const data = {
     paintEraser: "消しゴム",
     paintClear: "クリア",
     paintSize: "太さ",
+    terminal: "ターミナル",
+    terminalWelcome: "CaptureMemo Desktop Terminal v1.0",
+    terminalHint: "'help' と入力するとコマンド一覧が表示されます。",
+    terminalUnknown: "コマンドが見つかりません: {cmd}",
+    terminalVersion: "CaptureMemo Desktop Terminal v1.0",
+    terminalAbout: "CaptureMemo 公式サイトのデスクトップ環境です。",
+    terminalOpened: "{app} を起動しました。",
+    terminalOpenUnknown: "アプリが見つかりません: {app}",
+    terminalOpenUsage: "使用法: open [capturememo|calc|notepad|paint|terminal]",
+    terminalLangSet: "言語を {lang} に変更しました。",
+    terminalLangInvalid: "使用可能: ja, en",
+    terminalHelpText: "help              コマンド一覧を表示\nclear / cls       画面をクリア\necho [text]       テキストを表示\ndate              日時を表示\nwhoami            ユーザー名を表示\nopen [app]        アプリを起動\nlang [ja|en]      言語を切替\nver / version     バージョン情報\nabout             このサイトについて\nls / dir          ファイル一覧",
 
     desc: "スクショ・画像・テキストを常に最前面に置いて使えるメモアプリ",
 
@@ -79,6 +91,18 @@ const data = {
     paintEraser: "Eraser",
     paintClear: "Clear",
     paintSize: "Size",
+    terminal: "Terminal",
+    terminalWelcome: "CaptureMemo Desktop Terminal v1.0",
+    terminalHint: "Type 'help' to see available commands.",
+    terminalUnknown: "Command not found: {cmd}",
+    terminalVersion: "CaptureMemo Desktop Terminal v1.0",
+    terminalAbout: "This is the desktop environment for the CaptureMemo official site.",
+    terminalOpened: "Opened {app}.",
+    terminalOpenUnknown: "App not found: {app}",
+    terminalOpenUsage: "Usage: open [capturememo|calc|notepad|paint|terminal]",
+    terminalLangSet: "Language switched to {lang}.",
+    terminalLangInvalid: "Available: ja, en",
+    terminalHelpText: "help              Show command list\nclear / cls       Clear screen\necho [text]       Print text\ndate              Show date and time\nwhoami            Show username\nopen [app]        Launch an app\nlang [ja|en]      Switch language\nver / version     Show version\nabout             About this site\nls / dir          List files",
 
     desc: "A memo app that lets you keep screenshots, images, and text always on top while you work.",
     
@@ -249,6 +273,7 @@ function updateTaskTitle() {
   const calcWin = document.getElementById("calcWindow");
   const notepadWin = document.getElementById("notepadWindow");
   const paintWin = document.getElementById("paintWindow");
+  const terminalWin = document.getElementById("terminalWindow");
 
   if (appWin && getComputedStyle(appWin).display !== "none") {
     parts.push(data[lang].appCaptureMemo);
@@ -264,6 +289,10 @@ function updateTaskTitle() {
 
   if (paintWin && getComputedStyle(paintWin).display !== "none") {
     parts.push(data[lang].paint);
+  }
+
+  if (terminalWin && getComputedStyle(terminalWin).display !== "none") {
+    parts.push(data[lang].terminal);
   }
 
   title.textContent = parts.join(" | ");
@@ -405,6 +434,245 @@ function closePaint() {
 
   win.style.display = "none";
   updateTaskTitle();
+}
+
+/* =========================
+   ターミナルを開く
+========================= */
+function openTerminal() {
+  const win = document.getElementById("terminalWindow");
+  const input = document.getElementById("terminalInput");
+  if (!win) return;
+
+  win.style.display = "block";
+  updateTaskTitle();
+
+  if (!terminalBooted) {
+    terminalBooted = true;
+    printTerminalWelcome();
+  }
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  if (input) {
+    input.focus();
+  }
+}
+
+/* =========================
+   ターミナルを閉じる
+========================= */
+function closeTerminal() {
+  const win = document.getElementById("terminalWindow");
+  if (!win) return;
+
+  win.style.display = "none";
+  updateTaskTitle();
+}
+
+/* =========================
+   ターミナルロジック
+========================= */
+let terminalBooted = false;
+const terminalHistory = [];
+let terminalHistoryIndex = -1;
+
+function getTerminalOutput() {
+  return document.getElementById("terminalOutput");
+}
+
+function appendTerminalLine(text, type = "output") {
+  const output = getTerminalOutput();
+  if (!output) return;
+
+  const line = document.createElement("div");
+  line.className = `terminal-line terminal-${type}`;
+  line.textContent = text;
+  output.appendChild(line);
+  output.scrollTop = output.scrollHeight;
+}
+
+function clearTerminalOutput() {
+  const output = getTerminalOutput();
+  if (output) {
+    output.innerHTML = "";
+  }
+}
+
+function printTerminalWelcome() {
+  appendTerminalLine(data[lang].terminalWelcome, "welcome");
+  appendTerminalLine(data[lang].terminalHint, "hint");
+}
+
+function getTerminalDirListing() {
+  const d = data[lang];
+  return [
+    "CaptureMemo.exe",
+    `${d.calculator}.exe`,
+    `${d.notepad}.exe`,
+    `${d.paint}.exe`,
+    `${d.terminal}.exe`,
+    "README.txt"
+  ].join("\n");
+}
+
+function terminalOpenApp(name) {
+  const apps = {
+    capturememo: { fn: () => openApp("overview"), label: () => data[lang].appCaptureMemo },
+    calc: { fn: openCalculator, label: () => data[lang].calculator },
+    calculator: { fn: openCalculator, label: () => data[lang].calculator },
+    notepad: { fn: openNotepad, label: () => data[lang].notepad },
+    paint: { fn: openPaint, label: () => data[lang].paint },
+    terminal: { fn: openTerminal, label: () => data[lang].terminal }
+  };
+
+  const app = apps[name?.toLowerCase()];
+  if (!app) return false;
+
+  app.fn();
+  appendTerminalLine(
+    data[lang].terminalOpened.replace("{app}", app.label()),
+    "success"
+  );
+  return true;
+}
+
+function terminalSetLanguage(code) {
+  const langBtn = document.getElementById("langBtn");
+  const nextLang = code?.toLowerCase();
+
+  if (nextLang !== "ja" && nextLang !== "en") {
+    appendTerminalLine(data[lang].terminalLangInvalid, "error");
+    return;
+  }
+
+  lang = nextLang;
+
+  if (langBtn) {
+    langBtn.innerText = lang === "ja" ? "EN" : "JA";
+  }
+
+  render();
+  updateTaskTitle();
+  appendTerminalLine(
+    data[lang].terminalLangSet.replace("{lang}", lang.toUpperCase()),
+    "success"
+  );
+}
+
+function executeTerminalCommand(input) {
+  const trimmed = input.trim();
+  if (!trimmed) return;
+
+  appendTerminalLine(`> ${trimmed}`, "input-echo");
+
+  const parts = trimmed.split(/\s+/);
+  const cmd = parts[0].toLowerCase();
+  const args = parts.slice(1);
+
+  switch (cmd) {
+    case "help":
+      appendTerminalLine(data[lang].terminalHelpText, "output");
+      break;
+
+    case "clear":
+    case "cls":
+      clearTerminalOutput();
+      break;
+
+    case "echo":
+      appendTerminalLine(args.join(" "), "output");
+      break;
+
+    case "date": {
+      const locale = lang === "ja" ? "ja-JP" : "en-US";
+      appendTerminalLine(new Date().toLocaleString(locale), "output");
+      break;
+    }
+
+    case "whoami":
+      appendTerminalLine("desktop-user", "output");
+      break;
+
+    case "open":
+      if (!args[0]) {
+        appendTerminalLine(data[lang].terminalOpenUsage, "error");
+        break;
+      }
+      if (!terminalOpenApp(args[0])) {
+        appendTerminalLine(
+          data[lang].terminalOpenUnknown.replace("{app}", args[0]),
+          "error"
+        );
+      }
+      break;
+
+    case "lang":
+      if (!args[0]) {
+        appendTerminalLine(data[lang].terminalLangInvalid, "error");
+        break;
+      }
+      terminalSetLanguage(args[0]);
+      break;
+
+    case "ver":
+    case "version":
+      appendTerminalLine(data[lang].terminalVersion, "output");
+      break;
+
+    case "about":
+      appendTerminalLine(data[lang].terminalAbout, "output");
+      break;
+
+    case "ls":
+    case "dir":
+      appendTerminalLine(getTerminalDirListing(), "output");
+      break;
+
+    default:
+      appendTerminalLine(
+        data[lang].terminalUnknown.replace("{cmd}", parts[0]),
+        "error"
+      );
+  }
+}
+
+function initTerminalApp() {
+  const input = document.getElementById("terminalInput");
+  if (!input) return;
+
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      const value = input.value;
+      if (value.trim()) {
+        terminalHistory.push(value);
+        terminalHistoryIndex = terminalHistory.length;
+      }
+      executeTerminalCommand(value);
+      input.value = "";
+      return;
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (!terminalHistory.length) return;
+
+      terminalHistoryIndex = Math.max(0, terminalHistoryIndex - 1);
+      input.value = terminalHistory[terminalHistoryIndex] || "";
+      return;
+    }
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (!terminalHistory.length) return;
+
+      terminalHistoryIndex = Math.min(terminalHistory.length, terminalHistoryIndex + 1);
+      input.value = terminalHistory[terminalHistoryIndex] || "";
+    }
+  });
 }
 
 /* =========================
@@ -926,6 +1194,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   initPaintApp();
+  initTerminalApp();
 });
 
 /* =========================
@@ -974,6 +1243,10 @@ document.addEventListener("DOMContentLoaded", () => {
   makeDraggable(
     document.getElementById("paintWindow"),
     document.getElementById("paintDragBar")
+  );
+  makeDraggable(
+    document.getElementById("terminalWindow"),
+    document.getElementById("terminalDragBar")
   );
 });
 

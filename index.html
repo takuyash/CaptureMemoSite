@@ -44,6 +44,11 @@
       <div class="icon-label" data-i18n="paint"></div>
     </div>
 
+    <div class="icon" onclick="openTerminal()">
+      <span class="icon-image">💻</span>
+      <div class="icon-label" data-i18n="terminal"></div>
+    </div>
+
   </div>
 
   <!-- TASKBAR -->
@@ -63,6 +68,7 @@
     <div onclick="openCalculator()" data-i18n="calculator"></div>
     <div onclick="openNotepad()" data-i18n="notepad"></div>
     <div onclick="openPaint()" data-i18n="paint"></div>
+    <div onclick="openTerminal()" data-i18n="terminal"></div>
   </div>
 
   <!-- WINDOW -->
@@ -232,6 +238,32 @@
         <button type="button" class="paint-clear-btn" onclick="clearPaintCanvas()" data-i18n="paintClear"></button>
       </div>
       <canvas id="paintCanvas" width="480" height="300"></canvas>
+    </div>
+
+  </div>
+
+  <!-- TERMINAL WINDOW -->
+  <div class="window terminal-window" id="terminalWindow" style="display:none;">
+
+    <div class="titlebar" id="terminalDragBar">
+      <span data-i18n="terminal"></span>
+      <div class="controls">
+        <button onclick="closeTerminal()">×</button>
+      </div>
+    </div>
+
+    <div class="terminal-body">
+      <div class="terminal-output" id="terminalOutput"></div>
+      <div class="terminal-input-line">
+        <span class="terminal-prompt">C:\></span>
+        <input
+          type="text"
+          id="terminalInput"
+          class="terminal-input"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
     </div>
 
   </div>
