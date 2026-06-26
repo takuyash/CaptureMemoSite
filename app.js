@@ -9,6 +9,7 @@ const data = {
     info: "インフォメーション",
     calculator: "電卓",
     notepad: "メモ帳",
+    appCaptureMemo: "CaptureMemo",
     notepadPlaceholder: "ここにメモを入力...",
     paint: "ペイント",
     paintBrush: "ブラシ",
@@ -71,6 +72,7 @@ const data = {
     info: "Info",
     calculator: "Calculator",
     notepad: "Notepad",
+    appCaptureMemo: "CaptureMemo",
     notepadPlaceholder: "Type your notes here...",
     paint: "Paint",
     paintBrush: "Brush",
@@ -249,7 +251,7 @@ function updateTaskTitle() {
   const paintWin = document.getElementById("paintWindow");
 
   if (appWin && getComputedStyle(appWin).display !== "none") {
-    parts.push("CaptureMemo");
+    parts.push(data[lang].appCaptureMemo);
   }
 
   if (calcWin && getComputedStyle(calcWin).display !== "none") {

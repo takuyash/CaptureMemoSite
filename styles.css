@@ -140,28 +140,38 @@ body {
   top: 20px;
   left: 20px;
   display: grid;
-  grid-template-columns: 80px;
-  gap: 15px;
+  grid-template-columns: 88px;
+  gap: 12px;
 }
 
 .icon {
-  width: 80px;
-  height: 80px;
+  width: 88px;
+  min-height: 88px;
+  padding: 8px 4px;
+  box-sizing: border-box;
   color: white;
   text-align: center;
   cursor: pointer;
   user-select: none;
-  font-size: 28px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   border-radius: 8px;
 }
 
-.icon div {
-  font-size: 12px;
-  margin-top: 4px;
+.icon-image {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.icon-label {
+  margin-top: 6px;
+  font-size: 11px;
+  line-height: 1.3;
+  word-break: break-word;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  max-width: 80px;
 }
 
 .icon:hover {
