@@ -61,6 +61,7 @@
   <div class="start-menu" id="startMenu">
     <div onclick="openApp('overview')">CaptureMemo</div>
     <div onclick="openCalculator()" data-i18n="calculator"></div>
+    <div onclick="openNotepad()" data-i18n="notepad"></div>
   </div>
 
   <!-- WINDOW -->
@@ -182,6 +183,26 @@
         <button class="calc-btn calc-btn-zero" onclick="calcDigit('0')">0</button>
         <button class="calc-btn" onclick="calcDecimal()">.</button>
       </div>
+    </div>
+
+  </div>
+
+  <!-- NOTEPAD WINDOW -->
+  <div class="window notepad-window" id="notepadWindow" style="display:none;">
+
+    <div class="titlebar" id="notepadDragBar">
+      <span data-i18n="notepad"></span>
+      <div class="controls">
+        <button onclick="closeNotepad()">×</button>
+      </div>
+    </div>
+
+    <div class="notepad-body">
+      <textarea
+        id="notepadText"
+        class="notepad-textarea"
+        spellcheck="false"
+      ></textarea>
     </div>
 
   </div>

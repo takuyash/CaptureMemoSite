@@ -8,6 +8,8 @@ const data = {
     usageTitle: "使い方",
     info: "インフォメーション",
     calculator: "電卓",
+    notepad: "メモ帳",
+    notepadPlaceholder: "ここにメモを入力...",
 
     desc: "スクショ・画像・テキストを常に最前面に置いて使えるメモアプリ",
 
@@ -63,6 +65,8 @@ const data = {
     usageTitle: "Usage",
     info: "Info",
     calculator: "Calculator",
+    notepad: "Notepad",
+    notepadPlaceholder: "Type your notes here...",
 
     desc: "A memo app that lets you keep screenshots, images, and text always on top while you work.",
     
@@ -231,6 +235,7 @@ function updateTaskTitle() {
   const parts = [];
   const appWin = document.getElementById("appWindow");
   const calcWin = document.getElementById("calcWindow");
+  const notepadWin = document.getElementById("notepadWindow");
 
   if (appWin && getComputedStyle(appWin).display !== "none") {
     parts.push("CaptureMemo");
@@ -238,6 +243,10 @@ function updateTaskTitle() {
 
   if (calcWin && getComputedStyle(calcWin).display !== "none") {
     parts.push(data[lang].calculator);
+  }
+
+  if (notepadWin && getComputedStyle(notepadWin).display !== "none") {
+    parts.push(data[lang].notepad);
   }
 
   title.textContent = parts.join(" | ");
@@ -316,6 +325,38 @@ function openCalculator() {
 ========================= */
 function closeCalculator() {
   const win = document.getElementById("calcWindow");
+  if (!win) return;
+
+  win.style.display = "none";
+  updateTaskTitle();
+}
+
+/* =========================
+   メモ帳を開く
+========================= */
+function openNotepad() {
+  const win = document.getElementById("notepadWindow");
+  const textarea = document.getElementById("notepadText");
+  if (!win) return;
+
+  win.style.display = "block";
+  updateTaskTitle();
+
+  if (textarea) {
+    textarea.focus();
+  }
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+}
+
+/* =========================
+   メモ帳を閉じる
+========================= */
+function closeNotepad() {
+  const win = document.getElementById("notepadWindow");
   if (!win) return;
 
   win.style.display = "none";
@@ -465,6 +506,11 @@ function render() {
       el.textContent = d[key];
     }
   });
+
+  const notepadText = document.getElementById("notepadText");
+  if (notepadText) {
+    notepadText.placeholder = d.notepadPlaceholder;
+  }
 
   const usageList = document.getElementById("usageList");
 
@@ -639,6 +685,14 @@ document.addEventListener("DOMContentLoaded", () => {
   render();
 
   updateTaskTitle();
+
+  const notepadText = document.getElementById("notepadText");
+  if (notepadText) {
+    notepadText.value = localStorage.getItem("notepad-content") || "";
+    notepadText.addEventListener("input", () => {
+      localStorage.setItem("notepad-content", notepadText.value);
+    });
+  }
 });
 
 /* =========================
@@ -679,6 +733,10 @@ document.addEventListener("DOMContentLoaded", () => {
   makeDraggable(
     document.getElementById("calcWindow"),
     document.getElementById("calcDragBar")
+  );
+  makeDraggable(
+    document.getElementById("notepadWindow"),
+    document.getElementById("notepadDragBar")
   );
 });
 
