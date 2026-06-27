@@ -21,6 +21,10 @@ const data = {
     winRestore: "元に戻す",
     winClose: "閉じる",
     terminal: "ターミナル",
+    browser: "ブラウザ",
+    browserGo: "移動",
+    browserHome: "https://takuyash.github.io/CaptureMemoSite/index.html",
+    browserAddressPlaceholder: "URLまたは検索語を入力...",
     terminalWelcome: "CaptureMemo Desktop Terminal v1.0",
     terminalHint: "'help' と入力するとコマンド一覧が表示されます。",
     terminalUnknown: "コマンドが見つかりません: {cmd}",
@@ -100,6 +104,10 @@ const data = {
     winRestore: "Restore",
     winClose: "Close",
     terminal: "Terminal",
+    browser: "Browser",
+    browserGo: "Go",
+    browserHome: "https://takuyash.github.io/CaptureMemoSite/index.html",
+    browserAddressPlaceholder: "Enter URL or search term...",
     terminalWelcome: "CaptureMemo Desktop Terminal v1.0",
     terminalHint: "Type 'help' to see available commands.",
     terminalUnknown: "Command not found: {cmd}",
@@ -269,6 +277,37 @@ const infos = [
   }
 ];
 
+const browserFavorites = [
+  {
+    label: {
+      ja: "WinSimpleFolderLauncherSite",
+      en: "WinSimpleFolderLauncherSite"
+    },
+    url: "https://takuyash.github.io/WinSimpleFolderLauncherSite/index.html"
+  },
+  {
+    label: {
+      ja: "PhraseLauncherSite",
+      en: "PhraseLauncherSite"
+    },
+    url: "https://takuyash.github.io/PhraseLauncherSite/index.html"
+  },
+  {
+    label: {
+      ja: "CaptureMemoSite",
+      en: "CaptureMemoSite"
+    },
+    url: "https://takuyash.github.io/CaptureMemoSite/index.html"
+  },
+  {
+    label: {
+      ja: "wikipedia",
+      en: "wikipedia"
+    },
+    url: "https://ja.wikipedia.org"
+  }
+];
+
 /* =========================
    ウィンドウ管理
 ========================= */
@@ -280,7 +319,8 @@ const WINDOW_CONFIG = [
   { id: "calcWindow", titleKey: "calculator" },
   { id: "notepadWindow", titleKey: "notepad" },
   { id: "paintWindow", titleKey: "paint" },
-  { id: "terminalWindow", titleKey: "terminal" }
+  { id: "terminalWindow", titleKey: "terminal" },
+  { id: "browserWindow", titleKey: "browser" }  
 ];
 
 const windowState = Object.fromEntries(
@@ -677,6 +717,32 @@ function closeTerminal() {
 }
 
 /* =========================
+   ブラウザを開く
+========================= */
+function openBrowser() {
+  registerWindowOpen("browserWindow");
+
+  if (!browserBooted) {
+    browserBooted = true;
+    browserNavigate(data[lang].browserHome);
+  }
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  document.getElementById("browserAddress")?.focus();
+}
+
+/* =========================
+   ブラウザを閉じる
+========================= */
+function closeBrowser() {
+  closeManagedWindow("browserWindow");
+}
+
+/* =========================
    ターミナルロジック
 ========================= */
 let terminalBooted = false;
@@ -729,7 +795,8 @@ function terminalOpenApp(name) {
     calculator: { fn: openCalculator, label: () => data[lang].calculator },
     notepad: { fn: openNotepad, label: () => data[lang].notepad },
     paint: { fn: openPaint, label: () => data[lang].paint },
-    terminal: { fn: openTerminal, label: () => data[lang].terminal }
+    terminal: { fn: openTerminal, label: () => data[lang].terminal },
+    browser: { fn: openBrowser, label: () => data[lang].browser }
   };
 
   const app = apps[name?.toLowerCase()];
@@ -1072,6 +1139,109 @@ function closeWindow() {
 }
 
 /* =========================
+   ブラウザロジック
+========================= */
+let browserBooted = false;
+const browserHistory = [];
+let browserHistoryIndex = -1;
+
+function normalizeBrowserUrl(input) {
+  const trimmed = (input || "").trim();
+  if (!trimmed) return "";
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  // 「example.com」のようなドメイン形式ならhttps://を付与
+  if (/^[\w-]+(\.[\w-]+)+(\/.*)?$/.test(trimmed) && !trimmed.includes(" ")) {
+    return `https://${trimmed}`;
+  }
+
+  // それ以外は検索語として扱う
+  return `https://www.bing.com/search?q=${encodeURIComponent(trimmed)}`;
+}
+
+function browserNavigate(input, fromHistory = false) {
+  const frame = document.getElementById("browserFrame");
+  const addressInput = document.getElementById("browserAddress");
+  if (!frame) return;
+
+  const url = normalizeBrowserUrl(input);
+  if (!url) return;
+
+  frame.src = url;
+
+  if (addressInput) {
+    addressInput.value = url;
+  }
+
+  if (!fromHistory) {
+    browserHistory.splice(browserHistoryIndex + 1);
+    browserHistory.push(url);
+    browserHistoryIndex = browserHistory.length - 1;
+  }
+}
+
+function browserNavigateFromInput() {
+  const addressInput = document.getElementById("browserAddress");
+  if (!addressInput) return;
+  browserNavigate(addressInput.value);
+}
+
+function browserGoBack() {
+  if (browserHistoryIndex <= 0) return;
+  browserHistoryIndex -= 1;
+  browserNavigate(browserHistory[browserHistoryIndex], true);
+}
+
+function browserGoForward() {
+  if (browserHistoryIndex >= browserHistory.length - 1) return;
+  browserHistoryIndex += 1;
+  browserNavigate(browserHistory[browserHistoryIndex], true);
+}
+
+function browserRefresh() {
+  const frame = document.getElementById("browserFrame");
+  if (!frame) return;
+  frame.src = frame.src;
+}
+
+function initBrowserApp() {
+  const addressInput = document.getElementById("browserAddress");
+  if (!addressInput) return;
+
+  addressInput.placeholder = data[lang].browserAddressPlaceholder;
+
+  addressInput.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      browserNavigateFromInput();
+    }
+  });
+
+  renderBrowserFavorites();
+}
+
+function renderBrowserFavorites() {
+  const container = document.getElementById("browserFavorites");
+  if (!container) return;
+
+  container.innerHTML = browserFavorites
+    .map(fav => `
+      <button type="button" class="browser-fav-btn" data-url="${fav.url}">
+        ${fav.label[lang] || fav.label.ja}
+      </button>
+    `)
+    .join("");
+
+  container.querySelectorAll(".browser-fav-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      browserNavigate(btn.dataset.url);
+    });
+  });
+}
+
+/* =========================
    電卓ロジック
 ========================= */
 const calcState = {
@@ -1353,6 +1523,13 @@ if (infoList) {
   ) {
     renderCalendar();
   }
+  
+  const browserAddress = document.getElementById("browserAddress");
+  if (browserAddress) {
+    browserAddress.placeholder = d.browserAddressPlaceholder;
+  }
+  
+  renderBrowserFavorites();
 
   updateWindowControlLabels();
   updateTaskbar();
@@ -1397,6 +1574,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   initPaintApp();
   initTerminalApp();
+  initBrowserApp();
 });
 
 /* =========================
@@ -1522,7 +1700,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "calcWindow", bar: "calcDragBar", minWidth: 240, minHeight: 320 },
     { id: "notepadWindow", bar: "notepadDragBar", minWidth: 280, minHeight: 200 },
     { id: "paintWindow", bar: "paintDragBar", minWidth: 320, minHeight: 280 },
-    { id: "terminalWindow", bar: "terminalDragBar", minWidth: 360, minHeight: 240 }
+    { id: "terminalWindow", bar: "terminalDragBar", minWidth: 360, minHeight: 240 },
+    { id: "browserWindow", bar: "browserDragBar", minWidth: 400, minHeight: 300 } 
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));

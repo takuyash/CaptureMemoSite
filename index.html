@@ -48,6 +48,11 @@
       <span class="icon-image">💻</span>
       <div class="icon-label" data-i18n="terminal"></div>
     </div>
+    
+    <div class="icon" onclick="openBrowser()">
+      <span class="icon-image">🌐</span>
+      <div class="icon-label" data-i18n="browser"></div>
+    </div>
 
   </div>
 
@@ -69,6 +74,7 @@
     <div onclick="openNotepad()" data-i18n="notepad"></div>
     <div onclick="openPaint()" data-i18n="paint"></div>
     <div onclick="openTerminal()" data-i18n="terminal"></div>
+    <div onclick="openBrowser()" data-i18n="browser"></div>
   </div>
 
   <!-- WINDOW -->
@@ -261,7 +267,6 @@
         <button type="button" class="win-btn win-close" data-window="terminalWindow">×</button>
       </div>
     </div>
-
     <div class="terminal-body">
       <div class="terminal-output" id="terminalOutput"></div>
       <div class="terminal-input-line">
@@ -278,8 +283,33 @@
 
   </div>
 
-</div>
+  <!-- BROWSER WINDOW -->
+  <div class="window window-resizable browser-window" id="browserWindow" style="display:none;">
 
+    <div class="titlebar" id="browserDragBar">
+      <span data-i18n="browser"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="browserWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="browserWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="browserWindow">×</button>
+      </div>
+    </div>
+
+    <div class="browser-body">
+      <div class="browser-toolbar">
+        <button type="button" class="browser-nav-btn" onclick="browserGoBack()">◀</button>
+        <button type="button" class="browser-nav-btn" onclick="browserGoForward()">▶</button>
+        <button type="button" class="browser-nav-btn" onclick="browserRefresh()">⟳</button>
+        <input type="text" id="browserAddress" class="browser-address" spellcheck="false">
+        <button type="button" class="browser-go-btn" onclick="browserNavigateFromInput()" data-i18n="browserGo"></button>
+      </div>
+      <div class="browser-favorites" id="browserFavorites"></div>
+      <div class="browser-frame-wrap">
+        <iframe id="browserFrame" class="browser-frame" src="about:blank"></iframe>
+      </div>
+    </div>
+
+  </div>
 <script src="app.js"></script>
 </body>
 </html>

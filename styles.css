@@ -266,7 +266,7 @@ body {
   margin-top: 10px;
 }
 
-/* ★追加：デスクトップアイコン */
+/* デスクトップアイコン */
 .desktop-icons {
   position: absolute;
   top: 20px;
@@ -309,7 +309,7 @@ body {
 .icon:hover {
   background: rgba(255,255,255,0.15);
 }
-/* ★時計（右下） */
+/* 時計（右下） */
 .clock {
   width: 140px;
   text-align: right;
@@ -725,4 +725,97 @@ body {
   color: #cccccc;
   font-size: 13px;
   font-family: "Consolas", "Courier New", monospace;
+}
+
+/* =========================
+   ブラウザーUI
+========================= */
+.browser-window {
+  width: 600px;
+  height: 420px;
+}
+
+.browser-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.browser-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+  background: #f0f0f0;
+}
+
+.browser-nav-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.browser-nav-btn:hover {
+  background: #e6e6e6;
+}
+
+.browser-address {
+  flex: 1;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid #ccc;
+  border-radius: 14px;
+  font-size: 13px;
+}
+
+.browser-go-btn {
+  height: 28px;
+  padding: 0 14px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.browser-go-btn:hover {
+  background: #e6e6e6;
+}
+
+.browser-frame-wrap {
+  flex: 1;
+  overflow: hidden;
+  background: #fff;
+}
+
+.browser-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.browser-favorites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 1px solid #ccc;
+  background: #f7f7f7;
+}
+
+.browser-fav-btn {
+  font-size: 12px;
+  padding: 4px 10px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.browser-fav-btn:hover {
+  background: #e6e6e6;
 }
