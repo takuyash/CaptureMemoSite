@@ -283,28 +283,40 @@ const browserFavorites = [
       ja: "WinSimpleFolderLauncherSite",
       en: "WinSimpleFolderLauncherSite"
     },
-    url: "https://takuyash.github.io/WinSimpleFolderLauncherSite/index.html"
+    url: {
+      ja: "https://takuyash.github.io/WinSimpleFolderLauncherSite/index.html",
+      en: "https://takuyash.github.io/WinSimpleFolderLauncherSite/index.html"
+    }
   },
   {
     label: {
       ja: "PhraseLauncherSite",
       en: "PhraseLauncherSite"
     },
-    url: "https://takuyash.github.io/PhraseLauncherSite/index.html"
+    url: {
+      ja: "https://takuyash.github.io/PhraseLauncherSite/index.html",
+      en: "https://takuyash.github.io/PhraseLauncherSite/index.html"
+    }
   },
   {
     label: {
       ja: "CaptureMemoSite",
       en: "CaptureMemoSite"
     },
-    url: "https://takuyash.github.io/CaptureMemoSite/index.html"
+    url: {
+      ja: "https://takuyash.github.io/CaptureMemoSite/index.html",
+      en: "https://takuyash.github.io/CaptureMemoSite/index.html"
+    }
   },
   {
     label: {
       ja: "wikipedia",
       en: "wikipedia"
     },
-    url: "https://ja.wikipedia.org"
+    url: {
+      ja: "https://ja.wikipedia.org",
+      en: "https://en.wikipedia.org"
+    }
   }
 ];
 
@@ -1228,7 +1240,7 @@ function renderBrowserFavorites() {
 
   container.innerHTML = browserFavorites
     .map(fav => `
-      <button type="button" class="browser-fav-btn" data-url="${fav.url}">
+      <button type="button" class="browser-fav-btn" data-url="${fav.url[lang] || fav.url.ja}">
         ${fav.label[lang] || fav.label.ja}
       </button>
     `)
