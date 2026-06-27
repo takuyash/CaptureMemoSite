@@ -285,7 +285,7 @@ const browserFavorites = [
     },
     url: {
       ja: "https://takuyash.github.io/WinSimpleFolderLauncherSite/index.html",
-      en: "https://takuyash.github.io/WinSimpleFolderLauncherSite/index.html"
+      en: "https://takuyash.github.io/WinSimpleFolderLauncherSite/en/index.html"
     }
   },
   {
@@ -295,7 +295,7 @@ const browserFavorites = [
     },
     url: {
       ja: "https://takuyash.github.io/PhraseLauncherSite/index.html",
-      en: "https://takuyash.github.io/PhraseLauncherSite/index.html"
+      en: "https://takuyash.github.io/PhraseLauncherSite/en/index.html"
     }
   },
   {
