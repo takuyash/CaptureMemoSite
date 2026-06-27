@@ -53,6 +53,11 @@
       <span class="icon-image">🌐</span>
       <div class="icon-label" data-i18n="browser"></div>
     </div>
+    
+    <div class="icon" onclick="openStickyNote()">
+      <span class="icon-image">📌</span>
+      <div class="icon-label" data-i18n="stickyNote"></div>
+    </div>
 
   </div>
 
@@ -75,6 +80,7 @@
     <div onclick="openPaint()" data-i18n="paint"></div>
     <div onclick="openTerminal()" data-i18n="terminal"></div>
     <div onclick="openBrowser()" data-i18n="browser"></div>
+    <div onclick="openStickyNote()" data-i18n="stickyNote"></div>
   </div>
 
   <!-- WINDOW -->
@@ -308,6 +314,17 @@
         <iframe id="browserFrame" class="browser-frame" src="about:blank"></iframe>
       </div>
     </div>
+  </div>
+ <!-- STICKY NOTE -->
+  <div class="window sticky-note-window" id="stickyNoteWindow" style="display:none;">
+
+    <div class="sticky-note-titlebar" id="stickyNoteDragBar">
+      <div class="controls">
+        <button type="button" class="win-btn win-close" data-window="stickyNoteWindow">×</button>
+      </div>
+    </div>
+
+    <div class="sticky-note-body" data-i18n="stickyNoteText"></div>
 
   </div>
 <script src="app.js"></script>

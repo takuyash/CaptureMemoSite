@@ -25,6 +25,8 @@ const data = {
     browserGo: "移動",
     browserHome: "https://takuyash.github.io/CaptureMemoSite/index.html",
     browserAddressPlaceholder: "URLまたは検索語を入力...",
+    stickyNote: "ふせん",
+    stickyNoteText: "メモ帳とペイントの内容は、このブラウザ内にのみ保存されます。\n他の端末と共有されず、外部に送信されることもありません。\nブラウザの履歴やキャッシュを削除すると消えるのでご注意ください。",
     terminalWelcome: "CaptureMemo Desktop Terminal v1.0",
     terminalHint: "'help' と入力するとコマンド一覧が表示されます。",
     terminalUnknown: "コマンドが見つかりません: {cmd}",
@@ -108,6 +110,8 @@ const data = {
     browserGo: "Go",
     browserHome: "https://takuyash.github.io/CaptureMemoSite/index.html",
     browserAddressPlaceholder: "Enter URL or search term...",
+    stickyNote: "Sticky Note",
+    stickyNoteText: "Notepad and Paint content is saved only in this browser.\nIt is not shared across devices or sent anywhere externally.\nClearing your browser cache will erase this data.",
     terminalWelcome: "CaptureMemo Desktop Terminal v1.0",
     terminalHint: "Type 'help' to see available commands.",
     terminalUnknown: "Command not found: {cmd}",
@@ -352,7 +356,8 @@ const WINDOW_CONFIG = [
   { id: "notepadWindow", titleKey: "notepad" },
   { id: "paintWindow", titleKey: "paint" },
   { id: "terminalWindow", titleKey: "terminal" },
-  { id: "browserWindow", titleKey: "browser" }  
+  { id: "browserWindow", titleKey: "browser" },
+  { id: "stickyNoteWindow", titleKey: "stickyNote" }  
 ];
 
 const windowState = Object.fromEntries(
@@ -772,6 +777,25 @@ function openBrowser() {
 ========================= */
 function closeBrowser() {
   closeManagedWindow("browserWindow");
+}
+
+/* =========================
+   ふせんを開く
+========================= */
+function openStickyNote() {
+  registerWindowOpen("stickyNoteWindow");
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+}
+
+/* =========================
+   ふせんを閉じる
+========================= */
+function closeStickyNote() {
+  closeManagedWindow("stickyNoteWindow");
 }
 
 /* =========================
@@ -1607,6 +1631,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPaintApp();
   initTerminalApp();
   initBrowserApp();
+  openStickyNote(); 
 });
 
 /* =========================
@@ -1733,12 +1758,18 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "notepadWindow", bar: "notepadDragBar", minWidth: 280, minHeight: 200 },
     { id: "paintWindow", bar: "paintDragBar", minWidth: 320, minHeight: 280 },
     { id: "terminalWindow", bar: "terminalDragBar", minWidth: 360, minHeight: 240 },
-    { id: "browserWindow", bar: "browserDragBar", minWidth: 400, minHeight: 300 } 
+    { id: "browserWindow", bar: "browserDragBar", minWidth: 400, minHeight: 300 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));
     makeResizable(win, { minWidth, minHeight });
   });
+
+  // ふせんはドラッグのみ(リサイズなし)
+  makeDraggable(
+    document.getElementById("stickyNoteWindow"),
+    document.getElementById("stickyNoteDragBar")
+  );
 });
 
 /* =========================
