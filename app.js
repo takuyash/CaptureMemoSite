@@ -310,6 +310,26 @@ const browserFavorites = [
   },
   {
     label: {
+      ja: "YearAndMonthprogress",
+      en: "YearAndMonthprogress"
+    },
+    url: {
+      ja: "https://takuyash.github.io/YearAndMonthprogress/YearAndMonthprogress.html",
+      en: "https://takuyash.github.io/YearAndMonthprogress/YearAndMonthprogress.html"
+    }
+  },
+  {
+    label: {
+      ja: "ZanShukkin",
+      en: "ZanShukkin"
+    },
+    url: {
+      ja: "https://takuyash.github.io/ZanShukkin/ZanShukkin.html",
+      en: "https://takuyash.github.io/ZanShukkin/ZanShukkin.html"
+    }
+  },
+  {
+    label: {
       ja: "wikipedia",
       en: "wikipedia"
     },
