@@ -38,9 +38,9 @@ const data = {
     terminalLangSet: "言語を {lang} に変更しました。",
     terminalLangInvalid: "使用可能: ja, en",
     terminalHelpText: "help              コマンド一覧を表示\nclear / cls       画面をクリア\necho [text]       テキストを表示\ndate              日時を表示\nwhoami            ユーザー名を表示\nopen [app]        アプリを起動\nlang [ja|en]      言語を切替\nver / version     バージョン情報\nabout             このサイトについて\nls / dir          ファイル一覧",
-
+    photo: "フォト",
+    photoEmpty: "画像がありません",
     desc: "スクショ・画像・テキストを常に最前面に置いて使えるメモアプリ",
-
     envTitle: "環境",
     env: "Windows 10 / 11",
     licenseTitle: "ライセンス",
@@ -123,7 +123,8 @@ const data = {
     terminalLangSet: "Language switched to {lang}.",
     terminalLangInvalid: "Available: ja, en",
     terminalHelpText: "help              Show command list\nclear / cls       Clear screen\necho [text]       Print text\ndate              Show date and time\nwhoami            Show username\nopen [app]        Launch an app\nlang [ja|en]      Switch language\nver / version     Show version\nabout             About this site\nls / dir          List files",
-
+    photo: "Photo",
+    photoEmpty: "No images found",
     desc: "A memo app that lets you keep screenshots, images, and text always on top while you work.",
     
     envTitle: "Environment",
@@ -345,6 +346,18 @@ const browserFavorites = [
 ];
 
 /* =========================
+   フォトアプリ用 画像リスト
+   ※ assets 配下の実際のファイル名
+========================= */
+const photoFiles = [
+  { file: "assets/CaptureMemo.png", caption: "CaptureMemo.png" },
+  { file: "assets/bg.png", caption: "bg.png" },
+  { file: "assets/download.png", caption: "download.png" },
+  { file: "assets/execute.png", caption: "execute.png" },
+  { file: "assets/thawing.png", caption: "thawing.png" }
+];
+
+/* =========================
    ウィンドウ管理
 ========================= */
 const TASKBAR_HEIGHT = 42;
@@ -357,6 +370,7 @@ const WINDOW_CONFIG = [
   { id: "paintWindow", titleKey: "paint" },
   { id: "terminalWindow", titleKey: "terminal" },
   { id: "browserWindow", titleKey: "browser" },
+  { id: "photoWindow", titleKey: "photo" },
   { id: "stickyNoteWindow", titleKey: "stickyNote" }  
 ];
 
@@ -777,6 +791,31 @@ function openBrowser() {
 ========================= */
 function closeBrowser() {
   closeManagedWindow("browserWindow");
+}
+
+/* =========================
+   フォトを開く
+========================= */
+function openPhoto() {
+  registerWindowOpen("photoWindow");
+
+  if (!photoBooted) {
+    photoBooted = true;
+    renderPhotoThumbs();
+    photoShow(0);
+  }
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+}
+
+/* =========================
+   フォトを閉じる
+========================= */
+function closePhoto() {
+  closeManagedWindow("photoWindow");
 }
 
 /* =========================
@@ -1416,6 +1455,67 @@ function calcEquals() {
 }
 
 /* =========================
+   フォトロジック
+========================= */
+let photoBooted = false;
+let photoIndex = 0;
+
+function renderPhotoThumbs() {
+  const container = document.getElementById("photoThumbs");
+  if (!container) return;
+
+  if (!photoFiles.length) {
+    container.innerHTML = `<div class="photo-empty">${data[lang].photoEmpty}</div>`;
+    return;
+  }
+
+  container.innerHTML = photoFiles
+    .map((p, i) => `
+      <button type="button" class="photo-thumb-btn ${i === photoIndex ? "active" : ""}" data-index="${i}">
+        <img src="${p.file}" alt="">
+      </button>
+    `)
+    .join("");
+
+  container.querySelectorAll(".photo-thumb-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      photoShow(parseInt(btn.dataset.index, 10));
+    });
+  });
+}
+
+function photoShow(index) {
+  if (!photoFiles.length) return;
+
+  const len = photoFiles.length;
+  photoIndex = ((index % len) + len) % len;
+
+  const photo = photoFiles[photoIndex];
+  const img = document.getElementById("photoMainImage");
+  const caption = document.getElementById("photoCaption");
+
+  if (img) {
+    img.src = photo.file;
+    img.alt = photo.caption || "";
+  }
+
+  if (caption) {
+    caption.textContent = photo.caption || "";
+  }
+
+  renderPhotoThumbs();
+}
+
+function photoPrev() {
+  photoShow(photoIndex - 1);
+}
+
+function photoNext() {
+  photoShow(photoIndex + 1);
+}
+
+
+/* =========================
    描画
 ========================= */
 function render() {
@@ -1586,6 +1686,10 @@ if (infoList) {
   }
   
   renderBrowserFavorites();
+  
+  if (photoBooted) {
+    renderPhotoThumbs();
+  }
 
   updateWindowControlLabels();
   updateTaskbar();
@@ -1758,7 +1862,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "notepadWindow", bar: "notepadDragBar", minWidth: 280, minHeight: 200 },
     { id: "paintWindow", bar: "paintDragBar", minWidth: 320, minHeight: 280 },
     { id: "terminalWindow", bar: "terminalDragBar", minWidth: 360, minHeight: 240 },
-    { id: "browserWindow", bar: "browserDragBar", minWidth: 400, minHeight: 300 }
+    { id: "browserWindow", bar: "browserDragBar", minWidth: 400, minHeight: 300 },
+    { id: "photoWindow", bar: "photoDragBar", minWidth: 400, minHeight: 320 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));

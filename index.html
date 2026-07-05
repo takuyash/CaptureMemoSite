@@ -60,6 +60,11 @@
       <span class="icon-image">📌</span>
       <div class="icon-label" data-i18n="stickyNote"></div>
     </div>
+    
+        <div class="icon icon-photo" onclick="openPhoto()">
+      <span class="icon-image">🖼️</span>
+      <div class="icon-label" data-i18n="photo"></div>
+    </div>
 
   <!-- TASKBAR -->
   <div class="taskbar">
@@ -81,6 +86,7 @@
     <div onclick="openTerminal()" data-i18n="terminal"></div>
     <div onclick="openBrowser()" data-i18n="browser"></div>
     <div onclick="openStickyNote()" data-i18n="stickyNote"></div>
+    <div onclick="openPhoto()" data-i18n="photo"></div>
   </div>
 
   <!-- WINDOW -->
@@ -327,6 +333,34 @@
     <div class="sticky-note-body" data-i18n="stickyNoteText"></div>
 
   </div>
+  
+  <!-- PHOTO WINDOW -->
+  <div class="window window-resizable photo-window" id="photoWindow" style="display:none;">
+
+    <div class="titlebar" id="photoDragBar">
+      <span data-i18n="photo"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="photoWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="photoWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="photoWindow">×</button>
+      </div>
+    </div>
+
+    <div class="photo-body">
+      <div class="photo-thumbs" id="photoThumbs"></div>
+
+      <div class="photo-viewer">
+        <div class="photo-viewer-main">
+          <button type="button" class="photo-nav-btn" onclick="photoPrev()">◀</button>
+          <img id="photoMainImage" class="photo-main-image" src="" alt="">
+          <button type="button" class="photo-nav-btn" onclick="photoNext()">▶</button>
+        </div>
+        <div class="photo-caption" id="photoCaption"></div>
+      </div>
+    </div>
+
+  </div>
+  
 <script src="app.js"></script>
 </body>
 </html>
