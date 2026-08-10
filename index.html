@@ -56,15 +56,20 @@
 
   </div>
   
-   <div class="icon icon-sticky-note" onclick="openStickyNote()">
+  <div class="icon icon-sticky-note" onclick="openStickyNote()">
       <span class="icon-image">📌</span>
       <div class="icon-label" data-i18n="stickyNote"></div>
-    </div>
+  </div>
     
-        <div class="icon icon-photo" onclick="openPhoto()">
+  <div class="icon icon-photo" onclick="openPhoto()">
       <span class="icon-image">🖼️</span>
       <div class="icon-label" data-i18n="photo"></div>
-    </div>
+  </div>
+    
+  <div class="icon icon-counter" onclick="openCounter()">
+      <span class="icon-image">🔤</span>
+      <div class="icon-label" data-i18n="counter"></div>
+  </div>
 
   <!-- TASKBAR -->
   <div class="taskbar">
@@ -87,6 +92,7 @@
     <div onclick="openBrowser()" data-i18n="browser"></div>
     <div onclick="openStickyNote()" data-i18n="stickyNote"></div>
     <div onclick="openPhoto()" data-i18n="photo"></div>
+    <div onclick="openCounter()" data-i18n="counter"></div>
   </div>
 
   <!-- WINDOW -->
@@ -171,7 +177,7 @@
 
           <div id="infoList"></div>
 
-</div>
+        </div>
 
       </div>
 
@@ -321,7 +327,8 @@
       </div>
     </div>
   </div>
- <!-- STICKY NOTE -->
+
+  <!-- STICKY NOTE -->
   <div class="window sticky-note-window" id="stickyNoteWindow" style="display:none;">
 
     <div class="sticky-note-titlebar" id="stickyNoteDragBar">
@@ -360,7 +367,53 @@
     </div>
 
   </div>
-  
+
+  <!-- COUNTER WINDOW -->
+  <div class="window window-resizable counter-window" id="counterWindow" style="display:none;">
+
+    <div class="titlebar" id="counterDragBar">
+      <span data-i18n="counter"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="counterWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="counterWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="counterWindow">×</button>
+      </div>
+    </div>
+
+    <div class="counter-body">
+      <textarea
+        id="counterText"
+        class="counter-textarea"
+        placeholder="ここに文章を入力してください"
+        spellcheck="false"
+      ></textarea>
+
+      <div class="counter-result">
+        <div class="counter-card">
+          <div data-i18n="countAllLabel">文字数（改行含む）</div>
+          <div class="counter-value" id="countAll">0</div>
+        </div>
+        <div class="counter-card">
+          <div data-i18n="countNoNewlineLabel">文字数（改行除く）</div>
+          <div class="counter-value" id="countNoNewline">0</div>
+        </div>
+        <div class="counter-card">
+          <div data-i18n="countNoSpaceLabel">文字数（空白除く）</div>
+          <div class="counter-value" id="countNoSpace">0</div>
+        </div>
+        <div class="counter-card">
+          <div data-i18n="lineCountLabel">行数</div>
+          <div class="counter-value" id="lineCount">1</div>
+        </div>
+      </div>
+
+      <button type="button" class="counter-clear-btn" onclick="clearCounterText()" data-i18n="clear">クリア</button>
+    </div>
+
+  </div>
+
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>

@@ -41,6 +41,12 @@ const data = {
     photo: "フォト",
     photoEmpty: "画像がありません",
     desc: "スクショ・画像・テキストを常に最前面に置いて使えるメモアプリ",
+    counter: "文字数カウンター",
+    countAllLabel: "文字数（改行含む）",
+    countNoNewlineLabel: "文字数（改行除く）",
+    countNoSpaceLabel: "文字数（空白除く）",
+    lineCountLabel: "行数",
+    clear: "クリア",
     envTitle: "環境",
     env: "Windows 10 / 11",
     licenseTitle: "ライセンス",
@@ -126,7 +132,12 @@ const data = {
     photo: "Photo",
     photoEmpty: "No images found",
     desc: "A memo app that lets you keep screenshots, images, and text always on top while you work.",
-    
+    counter: "Character Counter",
+    countAllLabel: "Characters (with newlines)",
+    countNoNewlineLabel: "Characters (without newlines)",
+    countNoSpaceLabel: "Characters (without spaces)",
+    lineCountLabel: "Lines",
+    clear: "Clear",
     envTitle: "Environment",
     env: "Windows 10 / 11",
     licenseTitle: "License",
@@ -371,7 +382,8 @@ const WINDOW_CONFIG = [
   { id: "terminalWindow", titleKey: "terminal" },
   { id: "browserWindow", titleKey: "browser" },
   { id: "photoWindow", titleKey: "photo" },
-  { id: "stickyNoteWindow", titleKey: "stickyNote" }  
+  { id: "stickyNoteWindow", titleKey: "stickyNote" } ,
+  { id: "counterWindow", titleKey: "counter" }
 ];
 
 const windowState = Object.fromEntries(
@@ -1735,6 +1747,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPaintApp();
   initTerminalApp();
   initBrowserApp();
+  initCounterApp();
   openStickyNote(); 
 });
 
@@ -1863,7 +1876,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "paintWindow", bar: "paintDragBar", minWidth: 320, minHeight: 280 },
     { id: "terminalWindow", bar: "terminalDragBar", minWidth: 360, minHeight: 240 },
     { id: "browserWindow", bar: "browserDragBar", minWidth: 400, minHeight: 300 },
-    { id: "photoWindow", bar: "photoDragBar", minWidth: 400, minHeight: 320 }
+    { id: "photoWindow", bar: "photoDragBar", minWidth: 400, minHeight: 320 },
+    { id: "counterWindow", bar: "counterDragBar", minWidth: 380, minHeight: 320 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));
@@ -2016,4 +2030,59 @@ function renderCalendar() {
   `;
 
   calendar.innerHTML = html;
+}
+
+/* =========================
+   文字数カウンターロジック
+========================= */
+function openCounter() {
+  registerWindowOpen("counterWindow");
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  document.getElementById("counterText")?.focus();
+}
+
+function closeCounter() {
+  closeManagedWindow("counterWindow");
+}
+
+function updateCounter() {
+  const textarea = document.getElementById("counterText");
+  if (!textarea) return;
+
+  const text = textarea.value;
+
+  // 改行含む
+  const countAll = text.length;
+  // 改行除く
+  const countNoNewline = text.replace(/\r?\n/g, "").length;
+  // 空白・改行除く
+  const countNoSpace = text.replace(/\s/g, "").length;
+  // 行数
+  const lineCount = text === "" ? 1 : text.split(/\r\n|\r|\n/).length;
+
+  document.getElementById("countAll").textContent = countAll;
+  document.getElementById("countNoNewline").textContent = countNoNewline;
+  document.getElementById("countNoSpace").textContent = countNoSpace;
+  document.getElementById("lineCount").textContent = lineCount;
+}
+
+function clearCounterText() {
+  const textarea = document.getElementById("counterText");
+  if (!textarea) return;
+
+  textarea.value = "";
+  updateCounter();
+}
+
+function initCounterApp() {
+  const textarea = document.getElementById("counterText");
+  if (!textarea) return;
+
+  textarea.addEventListener("input", updateCounter);
+  updateCounter();
 }
