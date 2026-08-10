@@ -47,6 +47,19 @@ const data = {
     countNoSpaceLabel: "文字数（空白除く）",
     lineCountLabel: "行数",
     clear: "クリア",
+    icoConverter: "ICO変換",
+    icoInputLabel: "入力",
+    icoDropMain: "画像をドラッグ＆ドロップ",
+    icoDropOr: "または",
+    icoSelectBtn: "ファイルを選択",
+    icoAcceptedTypes: "対応形式: PNG / JPG / JPEG / WebP / BMP / GIF / SVG",
+    icoPreviewLabel: "プレビュー",
+    icoEmptyPreview: "画像が選択されていません",
+    icoSizeLabel: "作成サイズ",
+    icoSizeSub: "（サイズごとに個別のICOを出力）",
+    icoSelectAll: "すべて選択",
+    icoDeselectAll: "すべて解除",
+    icoCreateBtn: "選択サイズのICOを作成",
     envTitle: "環境",
     env: "Windows 10 / 11",
     licenseTitle: "ライセンス",
@@ -138,6 +151,19 @@ const data = {
     countNoSpaceLabel: "Characters (without spaces)",
     lineCountLabel: "Lines",
     clear: "Clear",
+    icoConverter: "ICO Converter",
+    icoInputLabel: "Input",
+    icoDropMain: "Drag & drop image here",
+    icoDropOr: "or",
+    icoSelectBtn: "Select File",
+    icoAcceptedTypes: "Supported: PNG / JPG / JPEG / WebP / BMP / GIF / SVG",
+    icoPreviewLabel: "Preview",
+    icoEmptyPreview: "No image selected",
+    icoSizeLabel: "Icon Sizes",
+    icoSizeSub: "(outputs individual ICO per size)",
+    icoSelectAll: "Select All",
+    icoDeselectAll: "Deselect All",
+    icoCreateBtn: "Create ICO for Selected Sizes",
     envTitle: "Environment",
     env: "Windows 10 / 11",
     licenseTitle: "License",
@@ -383,7 +409,8 @@ const WINDOW_CONFIG = [
   { id: "browserWindow", titleKey: "browser" },
   { id: "photoWindow", titleKey: "photo" },
   { id: "stickyNoteWindow", titleKey: "stickyNote" } ,
-  { id: "counterWindow", titleKey: "counter" }
+  { id: "counterWindow", titleKey: "counter" },
+  { id: "icoConverterWindow", titleKey: "icoConverter" },
 ];
 
 const windowState = Object.fromEntries(
@@ -1749,6 +1776,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initBrowserApp();
   initCounterApp();
   openStickyNote(); 
+  initIcoConverterApp();
 });
 
 /* =========================
@@ -1877,7 +1905,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "terminalWindow", bar: "terminalDragBar", minWidth: 360, minHeight: 240 },
     { id: "browserWindow", bar: "browserDragBar", minWidth: 400, minHeight: 300 },
     { id: "photoWindow", bar: "photoDragBar", minWidth: 400, minHeight: 320 },
-    { id: "counterWindow", bar: "counterDragBar", minWidth: 380, minHeight: 320 }
+    { id: "counterWindow", bar: "counterDragBar", minWidth: 380, minHeight: 320 },
+    { id: "icoConverterWindow", bar: "icoConverterDragBar", minWidth: 400, minHeight: 400 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));
@@ -2085,4 +2114,169 @@ function initCounterApp() {
 
   textarea.addEventListener("input", updateCounter);
   updateCounter();
+}
+
+function openIcoConverter() {
+  registerWindowOpen("icoConverterWindow");
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+}
+
+function closeIcoConverter() {
+  closeManagedWindow("icoConverterWindow");
+}
+
+/* =========================
+   ICO Converter ロジック
+========================= */
+function initIcoConverterApp() {
+  const SIZES = [16, 24, 32, 48, 64, 96, 128, 256];
+
+  const dropzone = document.getElementById('icoDropzone');
+  const fileInput = document.getElementById('icoFileInput');
+  const selectBtn = document.getElementById('icoSelectBtn');
+  const previewArea = document.getElementById('icoPreviewArea');
+  const sizeGrid = document.getElementById('icoSizeGrid');
+  const selectAllBtn = document.getElementById('icoSelectAll');
+  const deselectAllBtn = document.getElementById('icoDeselectAll');
+  const createBtn = document.getElementById('icoCreateBtn');
+  const statusEl = document.getElementById('icoStatus');
+
+  if (!dropzone || !sizeGrid) return;
+
+  let currentImage = null;
+  let currentName = '';
+
+  // サイズグリッドの構築
+  sizeGrid.innerHTML = SIZES.map(size => `
+    <div class="size-tile">
+      <input type="checkbox" id="ico-size-${size}" value="${size}" checked>
+      <label for="ico-size-${size}">
+        <span class="px-icon"></span>
+        ${size}×${size}
+      </label>
+    </div>
+  `).join('');
+
+  selectAllBtn.addEventListener('click', () => {
+    SIZES.forEach(s => {
+      const cb = document.getElementById('ico-size-' + s);
+      if (cb) cb.checked = true;
+    });
+  });
+
+  deselectAllBtn.addEventListener('click', () => {
+    SIZES.forEach(s => {
+      const cb = document.getElementById('ico-size-' + s);
+      if (cb) cb.checked = false;
+    });
+  });
+
+  selectBtn.addEventListener('click', () => fileInput.click());
+  dropzone.addEventListener('click', (e) => {
+    if (e.target === selectBtn) return;
+    fileInput.click();
+  });
+
+  ['dragenter', 'dragover'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+    });
+  });
+
+  dropzone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handleIcoFile(file);
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) handleIcoFile(file);
+  });
+
+  function handleIcoFile(file) {
+    setIcoStatus('', '');
+    const validExt = /\.(png|jpe?g|webp|bmp|gif|svg)$/i;
+    const isImageType = file.type.startsWith('image/') || validExt.test(file.name);
+    if (!isImageType) {
+      setIcoStatus(lang === 'ja' ? '対応していないファイル形式です' : 'Unsupported file format', 'err');
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      currentImage = img;
+      currentName = file.name;
+      previewArea.innerHTML = `
+        <div class="preview-row">
+          <div class="preview-box"><img src="${img.src}" alt="preview"></div>
+          <div class="preview-meta">
+            <div class="preview-name">${escapeHtml(currentName)}</div>
+            <div class="preview-dims">${img.naturalWidth} × ${img.naturalHeight}px</div>
+          </div>
+        </div>
+      `;
+      createBtn.disabled = false;
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => {
+      setIcoStatus(lang === 'ja' ? '画像の読み込みに失敗しました' : 'Failed to load image', 'err');
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  }
+
+  function escapeHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function setIcoStatus(msg, cls) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (cls ? ' ' + cls : '');
+  }
+
+  // 簡易的なICO生成・ダウンロード処理（Canvas利用）
+  createBtn.addEventListener('click', () => {
+    if (!currentImage) return;
+    const selectedSizes = SIZES.filter(s => document.getElementById('ico-size-' + s)?.checked);
+    if (selectedSizes.length === 0) {
+      setIcoStatus(lang === 'ja' ? 'サイズが選択されていません' : 'No size selected', 'err');
+      return;
+    }
+
+    selectedSizes.forEach(size => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(currentImage, 0, 0, size, size);
+
+      canvas.toBlob(blob => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${currentName.replace(/\.[^/.]+$/, '')}_${size}x${size}.png`; // 実用的なPNG/ICO代替ダウンロード
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 'image/png');
+    });
+
+    setIcoStatus(lang === 'ja' ? 'ダウンロードを開始しました' : 'Download started', 'ok');
+  });
 }

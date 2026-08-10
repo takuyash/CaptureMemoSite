@@ -70,6 +70,11 @@
       <span class="icon-image">🔤</span>
       <div class="icon-label" data-i18n="counter"></div>
   </div>
+  
+  <div class="icon icon-ico-converter" onclick="openIcoConverter()">
+      <span class="icon-image">🔄</span>
+      <div class="icon-label" data-i18n="icoConverter"></div>
+    </div>
 
   <!-- TASKBAR -->
   <div class="taskbar">
@@ -93,6 +98,7 @@
     <div onclick="openStickyNote()" data-i18n="stickyNote"></div>
     <div onclick="openPhoto()" data-i18n="photo"></div>
     <div onclick="openCounter()" data-i18n="counter"></div>
+    <div onclick="openIcoConverter()" data-i18n="icoConverter"></div>
   </div>
 
   <!-- WINDOW -->
@@ -413,6 +419,59 @@
   </div>
 
 </div>
+
+<!-- ICO CONVERTER WINDOW -->
+  <div class="window window-resizable ico-converter-window" id="icoConverterWindow" style="display:none;">
+
+    <div class="titlebar" id="icoConverterDragBar">
+      <span data-i18n="icoConverter"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="icoConverterWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="icoConverterWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="icoConverterWindow">×</button>
+      </div>
+    </div>
+
+    <div class="ico-converter-body">
+      <div class="ico-app">
+        <div class="ico-card">
+          <div class="section">
+            <p class="section-label" data-i18n="icoInputLabel">入力</p>
+            <div class="dropzone" id="icoDropzone">
+              <div class="icon">📁</div>
+              <div class="dz-main" data-i18n="icoDropMain">画像をドラッグ＆ドロップ</div>
+              <div class="dz-or" data-i18n="icoDropOr">または</div>
+              <button type="button" class="btn" id="icoSelectBtn" data-i18n="icoSelectBtn">ファイルを選択</button>
+            </div>
+            <input type="file" id="icoFileInput" accept=".png,.jpg,.jpeg,.webp,.bmp,.gif,.svg,image/*" style="display:none;">
+            <div class="accepted-types" data-i18n="icoAcceptedTypes">対応形式: PNG / JPG / JPEG / WebP / BMP / GIF / SVG</div>
+          </div>
+
+          <div class="section">
+            <p class="section-label" data-i18n="icoPreviewLabel">プレビュー</p>
+            <div id="icoPreviewArea">
+              <span class="empty-preview" data-i18n="icoEmptyPreview">画像が選択されていません</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <p class="section-label"><span data-i18n="icoSizeLabel">作成サイズ</span> <span style="font-size:10px;color:var(--text-dim);font-weight:normal;" data-i18n="icoSizeSub">（サイズごとに個別のICOを出力）</span></p>
+            <div class="size-grid" id="icoSizeGrid"></div>
+            <div class="select-row">
+              <button type="button" class="btn" id="icoSelectAll" data-i18n="icoSelectAll">すべて選択</button>
+              <button type="button" class="btn" id="icoDeselectAll" data-i18n="icoDeselectAll">すべて解除</button>
+            </div>
+          </div>
+
+          <div class="section">
+            <button type="button" class="create-btn" id="icoCreateBtn" disabled data-i18n="icoCreateBtn">選択サイズのICOを作成</button>
+            <div class="status" id="icoStatus"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 
 <script src="app.js"></script>
 </body>
