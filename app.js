@@ -465,20 +465,20 @@ const TASKBAR_HEIGHT = 42;
 let windowZIndex = 10;
 
 const WINDOW_CONFIG = [
-  { id: "appWindow", titleKey: "appCaptureMemo" },
-  { id: "calcWindow", titleKey: "calculator" },
-  { id: "notepadWindow", titleKey: "notepad" },
-  { id: "paintWindow", titleKey: "paint" },
-  { id: "terminalWindow", titleKey: "terminal" },
-  { id: "browserWindow", titleKey: "browser" },
-  { id: "photoWindow", titleKey: "photo" },
-  { id: "stickyNoteWindow", titleKey: "stickyNote" } ,
-  { id: "counterWindow", titleKey: "counter" },
-  { id: "icoConverterWindow", titleKey: "icoConverter" },
-  { id: "qrWindow", titleKey: "qrCode" },
-  { id: "zenkakuWindow", titleKey: "zenkaku" },
-  { id: "barcodeWindow", titleKey: "barcode" },
-  { id: "stopwatchWindow", titleKey: "stopwatch" },
+  { id: "appWindow", titleKey: "appCaptureMemo", icon: "📄" },
+  { id: "calcWindow", titleKey: "calculator", icon: "🧮" },
+  { id: "notepadWindow", titleKey: "notepad", icon: "📝" },
+  { id: "paintWindow", titleKey: "paint", icon: "🎨" },
+  { id: "terminalWindow", titleKey: "terminal", icon: "💻" },
+  { id: "browserWindow", titleKey: "browser", icon: "🌐" },
+  { id: "photoWindow", titleKey: "photo", icon: "🖼️" },
+  { id: "stickyNoteWindow", titleKey: "stickyNote", icon: "📌" } ,
+  { id: "counterWindow", titleKey: "counter", icon: "🔤" },
+  { id: "icoConverterWindow", titleKey: "icoConverter", icon: "🔄" },
+  { id: "qrWindow", titleKey: "qrCode", icon: "🔳" },
+  { id: "zenkakuWindow", titleKey: "zenkaku", icon: "🔠" },
+  { id: "barcodeWindow", titleKey: "barcode", icon: "🏷️" },
+  { id: "stopwatchWindow", titleKey: "stopwatch", icon: "⏱️" },
 ];
 
 const windowState = Object.fromEntries(
@@ -679,14 +679,15 @@ function updateTaskbar() {
 
   container.innerHTML = "";
 
-  WINDOW_CONFIG.forEach(({ id, titleKey }) => {
+  WINDOW_CONFIG.forEach(({ id, titleKey, icon }) => {
     const state = windowState[id];
     if (!state || state.status === "closed") return;
 
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "task-app-btn";
-    btn.textContent = data[lang][titleKey];
+    btn.innerHTML = `<span class="task-app-icon">${icon}</span>`;
+    btn.title = data[lang][titleKey];
 
     if (state.status === "minimized") {
       btn.classList.add("minimized");
