@@ -1885,12 +1885,18 @@ function makeDraggable(win, bar) {
     offsetY = e.clientY - win.offsetTop;
   });
 
-  document.addEventListener("mousemove", e => {
-    if (!isDragging) return;
+document.addEventListener("mousemove", e => {
+  if (!isDragging) return;
 
-    win.style.left = (e.clientX - offsetX) + "px";
-    win.style.top = (e.clientY - offsetY) + "px";
-  });
+  const newLeft = e.clientX - offsetX;
+  const newTop = e.clientY - offsetY;
+
+  // 画面上端より上には移動させない
+  const maxTop = window.innerHeight - TASKBAR_HEIGHT - win.offsetHeight;
+
+  win.style.left = Math.max(0, newLeft) + "px";
+  win.style.top = Math.max(0, Math.min(newTop, maxTop)) + "px";
+});
 
   document.addEventListener("mouseup", () => {
     isDragging = false;
