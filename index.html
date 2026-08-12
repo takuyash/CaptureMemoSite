@@ -81,6 +81,11 @@
       <div class="icon-label" data-i18n="qrCode"></div>
     </div>
 
+  <div class="icon icon-zenkaku" onclick="openZenkaku()">
+      <span class="icon-image">🔠</span>
+      <div class="icon-label" data-i18n="zenkaku"></div>
+    </div>
+
   <!-- TASKBAR -->
   <div class="taskbar">
     <div class="start" onclick="toggleStart()">⊞</div>
@@ -105,6 +110,7 @@
     <div onclick="openCounter()" data-i18n="counter"></div>
     <div onclick="openIcoConverter()" data-i18n="icoConverter"></div>
     <div onclick="openQrCode()" data-i18n="qrCode"></div>
+    <div onclick="openZenkaku()" data-i18n="zenkaku"></div>
   </div>
 
   <!-- WINDOW -->
@@ -527,6 +533,73 @@
       </div>
 
       <div class="qr-status" id="qrStatus"></div>
+
+    </div>
+
+  </div>
+
+  <!-- ZENKAKU/HANKAKU WINDOW -->
+  <div class="window window-resizable zenkaku-window" id="zenkakuWindow" style="display:none;">
+
+    <div class="titlebar" id="zenkakuDragBar">
+      <span data-i18n="zenkaku"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="zenkakuWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="zenkakuWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="zenkakuWindow">×</button>
+      </div>
+    </div>
+
+    <div class="zenkaku-body">
+
+      <div class="zenkaku-options" id="zenkakuOptions">
+        <label class="zenkaku-option-label">
+          <input type="checkbox" id="zenkakuOptAlnum" checked>
+          <span data-i18n="zenkakuOptAlnum"></span>
+        </label>
+        <label class="zenkaku-option-label">
+          <input type="checkbox" id="zenkakuOptKana" checked>
+          <span data-i18n="zenkakuOptKana"></span>
+        </label>
+        <label class="zenkaku-option-label">
+          <input type="checkbox" id="zenkakuOptSpace">
+          <span data-i18n="zenkakuOptSpace"></span>
+        </label>
+      </div>
+
+      <div class="zenkaku-columns">
+        <div class="zenkaku-column">
+          <p class="zenkaku-col-label" data-i18n="zenkakuInputLabel"></p>
+          <textarea
+            id="zenkakuInput"
+            class="zenkaku-textarea"
+            placeholder="変換したい文字列を入力してください"
+            spellcheck="false"
+          ></textarea>
+        </div>
+
+        <div class="zenkaku-buttons">
+          <button type="button" class="zenkaku-conv-btn" id="zenkakuToFull" data-i18n="zenkakuToFullBtn"></button>
+          <button type="button" class="zenkaku-conv-btn" id="zenkakuToHalf" data-i18n="zenkakuToHalfBtn"></button>
+          <button type="button" class="zenkaku-swap-btn" id="zenkakuSwap" title="入力と出力を入れ替え">⇄</button>
+        </div>
+
+        <div class="zenkaku-column">
+          <p class="zenkaku-col-label" data-i18n="zenkakuOutputLabel"></p>
+          <textarea
+            id="zenkakuOutput"
+            class="zenkaku-textarea"
+            readonly
+            spellcheck="false"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="zenkaku-actions">
+        <button type="button" class="zenkaku-copy-btn" id="zenkakuCopyBtn" data-i18n="zenkakuCopyBtn"></button>
+        <button type="button" class="zenkaku-clear-btn" id="zenkakuClearBtn" data-i18n="clear"></button>
+        <span class="zenkaku-status" id="zenkakuStatus"></span>
+      </div>
 
     </div>
 

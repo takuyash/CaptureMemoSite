@@ -61,6 +61,16 @@ const data = {
     icoDeselectAll: "すべて解除",
     icoCreateBtn: "選択サイズのICOを作成",
     qrCode: "QRコード",
+    zenkaku: "全角/半角変換",
+    zenkakuInputLabel: "入力",
+    zenkakuOutputLabel: "出力",
+    zenkakuToFullBtn: "→ 全角",
+    zenkakuToHalfBtn: "→ 半角",
+    zenkakuOptAlnum: "英数字",
+    zenkakuOptKana: "カタカナ",
+    zenkakuOptSpace: "空白",
+    zenkakuCopyBtn: "コピー",
+    zenkakuCopied: "コピーしました",
     qrTextPlaceholder: "QRコードにしたい文字列やURLを入力してください",
     qrErrorLevelLabel: "誤り訂正レベル",
     qrCellSizeLabel: "セルサイズ",
@@ -172,6 +182,16 @@ const data = {
     icoDeselectAll: "Deselect All",
     icoCreateBtn: "Create ICO for Selected Sizes",
     qrCode: "QR Code",
+    zenkaku: "Full/Half-width Converter",
+    zenkakuInputLabel: "Input",
+    zenkakuOutputLabel: "Output",
+    zenkakuToFullBtn: "→ Full-width",
+    zenkakuToHalfBtn: "→ Half-width",
+    zenkakuOptAlnum: "Alphanumeric",
+    zenkakuOptKana: "Katakana",
+    zenkakuOptSpace: "Space",
+    zenkakuCopyBtn: "Copy",
+    zenkakuCopied: "Copied",
     qrTextPlaceholder: "Enter text or a URL to encode as a QR code",
     qrErrorLevelLabel: "Error Correction",
     qrCellSizeLabel: "Cell Size",
@@ -426,6 +446,7 @@ const WINDOW_CONFIG = [
   { id: "counterWindow", titleKey: "counter" },
   { id: "icoConverterWindow", titleKey: "icoConverter" },
   { id: "qrWindow", titleKey: "qrCode" },
+  { id: "zenkakuWindow", titleKey: "zenkaku" },
 ];
 
 const windowState = Object.fromEntries(
@@ -1798,6 +1819,7 @@ document.addEventListener("DOMContentLoaded", () => {
   openStickyNote(); 
   initIcoConverterApp();
   initQrCodeApp();
+  initZenkakuApp();
 });
 
 /* =========================
@@ -1928,7 +1950,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "photoWindow", bar: "photoDragBar", minWidth: 400, minHeight: 320 },
     { id: "counterWindow", bar: "counterDragBar", minWidth: 380, minHeight: 320 },
     { id: "icoConverterWindow", bar: "icoConverterDragBar", minWidth: 400, minHeight: 400 },
-    { id: "qrWindow", bar: "qrDragBar", minWidth: 360, minHeight: 420 }
+    { id: "qrWindow", bar: "qrDragBar", minWidth: 360, minHeight: 420 },
+    { id: "zenkakuWindow", bar: "zenkakuDragBar", minWidth: 480, minHeight: 360 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));
@@ -2424,4 +2447,183 @@ function initQrCodeApp() {
   downloadBtn?.addEventListener("click", downloadQrCode);
 
   generateQrCode();
+}
+
+/* =========================
+   全角/半角変換ロジック
+========================= */
+function openZenkaku() {
+  registerWindowOpen("zenkakuWindow");
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  document.getElementById("zenkakuInput")?.focus();
+}
+
+function closeZenkaku() {
+  closeManagedWindow("zenkakuWindow");
+}
+
+// 半角カタカナ -> 全角カタカナ 変換テーブル
+const ZENKAKU_KANA_MAP = {
+  "ｱ": "ア", "ｲ": "イ", "ｳ": "ウ", "ｴ": "エ", "ｵ": "オ",
+  "ｶ": "カ", "ｷ": "キ", "ｸ": "ク", "ｹ": "ケ", "ｺ": "コ",
+  "ｻ": "サ", "ｼ": "シ", "ｽ": "ス", "ｾ": "セ", "ｿ": "ソ",
+  "ﾀ": "タ", "ﾁ": "チ", "ﾂ": "ツ", "ﾃ": "テ", "ﾄ": "ト",
+  "ﾅ": "ナ", "ﾆ": "ニ", "ﾇ": "ヌ", "ﾈ": "ネ", "ﾉ": "ノ",
+  "ﾊ": "ハ", "ﾋ": "ヒ", "ﾌ": "フ", "ﾍ": "ヘ", "ﾎ": "ホ",
+  "ﾏ": "マ", "ﾐ": "ミ", "ﾑ": "ム", "ﾒ": "メ", "ﾓ": "モ",
+  "ﾔ": "ヤ", "ﾕ": "ユ", "ﾖ": "ヨ",
+  "ﾗ": "ラ", "ﾘ": "リ", "ﾙ": "ル", "ﾚ": "レ", "ﾛ": "ロ",
+  "ﾜ": "ワ", "ｦ": "ヲ", "ﾝ": "ン",
+  "ｧ": "ァ", "ｨ": "ィ", "ｩ": "ゥ", "ｪ": "ェ", "ｫ": "ォ",
+  "ｬ": "ャ", "ｭ": "ュ", "ｮ": "ョ", "ｯ": "ッ",
+  "ｰ": "ー", "ﾞ": "゛", "ﾟ": "゜", "｡": "。", "｢": "「",
+  "｣": "」", "､": "、", "･": "・"
+};
+
+// 濁点・半濁点付きの半角カタカナ -> 全角カタカナ
+const ZENKAKU_KANA_DAKUTEN_MAP = {
+  "ｶﾞ": "ガ", "ｷﾞ": "ギ", "ｸﾞ": "グ", "ｹﾞ": "ゲ", "ｺﾞ": "ゴ",
+  "ｻﾞ": "ザ", "ｼﾞ": "ジ", "ｽﾞ": "ズ", "ｾﾞ": "ゼ", "ｿﾞ": "ゾ",
+  "ﾀﾞ": "ダ", "ﾁﾞ": "ヂ", "ﾂﾞ": "ヅ", "ﾃﾞ": "デ", "ﾄﾞ": "ド",
+  "ﾊﾞ": "バ", "ﾋﾞ": "ビ", "ﾌﾞ": "ブ", "ﾍﾞ": "ベ", "ﾎﾞ": "ボ",
+  "ﾊﾟ": "パ", "ﾋﾟ": "ピ", "ﾌﾟ": "プ", "ﾍﾟ": "ペ", "ﾎﾟ": "ポ",
+  "ｳﾞ": "ヴ"
+};
+
+// 全角カタカナ -> 半角カタカナ（濁点付きを含む）逆引きテーブル
+const HANKAKU_KANA_MAP = (() => {
+  const map = {};
+  Object.entries(ZENKAKU_KANA_DAKUTEN_MAP).forEach(([half, full]) => {
+    map[full] = half;
+  });
+  Object.entries(ZENKAKU_KANA_MAP).forEach(([half, full]) => {
+    if (!map[full]) map[full] = half;
+  });
+  return map;
+})();
+
+function toFullWidth(text, opts) {
+  let result = text;
+
+  if (opts.alnum) {
+    result = result.replace(/[A-Za-z0-9!-/:-@[-`{-~]/g, ch => {
+      const code = ch.charCodeAt(0);
+      return String.fromCharCode(code + 0xFEE0);
+    });
+  }
+
+  if (opts.space) {
+    result = result.replace(/ /g, "\u3000");
+  }
+
+  if (opts.kana) {
+    // 濁点・半濁点付きを先に処理
+    Object.entries(ZENKAKU_KANA_DAKUTEN_MAP).forEach(([half, full]) => {
+      result = result.split(half).join(full);
+    });
+    Object.entries(ZENKAKU_KANA_MAP).forEach(([half, full]) => {
+      result = result.split(half).join(full);
+    });
+  }
+
+  return result;
+}
+
+function toHalfWidth(text, opts) {
+  let result = text;
+
+  if (opts.kana) {
+    Object.entries(HANKAKU_KANA_MAP).forEach(([full, half]) => {
+      result = result.split(full).join(half);
+    });
+  }
+
+  if (opts.alnum) {
+    result = result.replace(/[！-～]/g, ch => {
+      const code = ch.charCodeAt(0);
+      return String.fromCharCode(code - 0xFEE0);
+    });
+  }
+
+  if (opts.space) {
+    result = result.replace(/\u3000/g, " ");
+  }
+
+  return result;
+}
+
+function getZenkakuOptions() {
+  return {
+    alnum: !!document.getElementById("zenkakuOptAlnum")?.checked,
+    kana: !!document.getElementById("zenkakuOptKana")?.checked,
+    space: !!document.getElementById("zenkakuOptSpace")?.checked
+  };
+}
+
+function setZenkakuStatus(msg) {
+  const el = document.getElementById("zenkakuStatus");
+  if (el) el.textContent = msg || "";
+}
+
+function runZenkakuConvert(direction) {
+  const input = document.getElementById("zenkakuInput");
+  const output = document.getElementById("zenkakuOutput");
+  if (!input || !output) return;
+
+  const opts = getZenkakuOptions();
+  output.value =
+    direction === "full"
+      ? toFullWidth(input.value, opts)
+      : toHalfWidth(input.value, opts);
+
+  setZenkakuStatus("");
+}
+
+function clearZenkakuText() {
+  const input = document.getElementById("zenkakuInput");
+  const output = document.getElementById("zenkakuOutput");
+  if (input) input.value = "";
+  if (output) output.value = "";
+  setZenkakuStatus("");
+}
+
+async function copyZenkakuOutput() {
+  const output = document.getElementById("zenkakuOutput");
+  if (!output || !output.value) return;
+
+  try {
+    await navigator.clipboard.writeText(output.value);
+    setZenkakuStatus(data[lang].zenkakuCopied);
+  } catch (err) {
+    output.select();
+    document.execCommand("copy");
+    setZenkakuStatus(data[lang].zenkakuCopied);
+  }
+}
+
+function swapZenkakuText() {
+  const input = document.getElementById("zenkakuInput");
+  const output = document.getElementById("zenkakuOutput");
+  if (!input || !output) return;
+
+  const tmp = input.value;
+  input.value = output.value;
+  output.value = tmp;
+  setZenkakuStatus("");
+}
+
+function initZenkakuApp() {
+  const input = document.getElementById("zenkakuInput");
+  if (!input) return;
+
+  document.getElementById("zenkakuToFull")?.addEventListener("click", () => runZenkakuConvert("full"));
+  document.getElementById("zenkakuToHalf")?.addEventListener("click", () => runZenkakuConvert("half"));
+  document.getElementById("zenkakuSwap")?.addEventListener("click", swapZenkakuText);
+  document.getElementById("zenkakuCopyBtn")?.addEventListener("click", copyZenkakuOutput);
+  document.getElementById("zenkakuClearBtn")?.addEventListener("click", clearZenkakuText);
 }
