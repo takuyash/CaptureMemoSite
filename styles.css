@@ -1083,8 +1083,8 @@ body {
 ========================= */
 .icon-ico-converter {
   position: absolute;
-  top: 310px;
-  left: 120px;
+  top: 320px; 
+  left: 120px; 
 }
 
 .ico-converter-window {
@@ -1320,7 +1320,7 @@ body {
 ========================= */
 .icon-qr {
   position: absolute;
-  top: 400px;
+  top: 420px;
   left: 120px;
 }
 
@@ -1329,7 +1329,7 @@ body {
 ========================= */
 .icon-zenkaku {
   position: absolute;
-  top: 490px;
+  top: 520px;
   left: 120px;
 }
 
