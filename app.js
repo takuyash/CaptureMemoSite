@@ -60,6 +60,13 @@ const data = {
     icoSelectAll: "すべて選択",
     icoDeselectAll: "すべて解除",
     icoCreateBtn: "選択サイズのICOを作成",
+    qrCode: "QRコード",
+    qrTextPlaceholder: "QRコードにしたい文字列やURLを入力してください",
+    qrErrorLevelLabel: "誤り訂正レベル",
+    qrCellSizeLabel: "セルサイズ",
+    qrEmptyText: "文字列を入力するとQRコードが表示されます",
+    qrDownloadBtn: "PNGをダウンロード",
+    qrErrorTooLong: "文字数が多すぎてQRコードを生成できません",
     envTitle: "環境",
     env: "Windows 10 / 11",
     licenseTitle: "ライセンス",
@@ -164,6 +171,13 @@ const data = {
     icoSelectAll: "Select All",
     icoDeselectAll: "Deselect All",
     icoCreateBtn: "Create ICO for Selected Sizes",
+    qrCode: "QR Code",
+    qrTextPlaceholder: "Enter text or a URL to encode as a QR code",
+    qrErrorLevelLabel: "Error Correction",
+    qrCellSizeLabel: "Cell Size",
+    qrEmptyText: "Enter text to generate a QR code",
+    qrDownloadBtn: "Download PNG",
+    qrErrorTooLong: "Text is too long to generate a QR code",
     envTitle: "Environment",
     env: "Windows 10 / 11",
     licenseTitle: "License",
@@ -411,6 +425,7 @@ const WINDOW_CONFIG = [
   { id: "stickyNoteWindow", titleKey: "stickyNote" } ,
   { id: "counterWindow", titleKey: "counter" },
   { id: "icoConverterWindow", titleKey: "icoConverter" },
+  { id: "qrWindow", titleKey: "qrCode" },
 ];
 
 const windowState = Object.fromEntries(
@@ -1573,6 +1588,11 @@ function render() {
     notepadText.placeholder = d.notepadPlaceholder;
   }
 
+  const qrText = document.getElementById("qrText");
+  if (qrText) {
+    qrText.placeholder = d.qrTextPlaceholder;
+  }
+
   const usageList = document.getElementById("usageList");
 
 if (usageList) {
@@ -1777,6 +1797,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCounterApp();
   openStickyNote(); 
   initIcoConverterApp();
+  initQrCodeApp();
 });
 
 /* =========================
@@ -1906,7 +1927,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "browserWindow", bar: "browserDragBar", minWidth: 400, minHeight: 300 },
     { id: "photoWindow", bar: "photoDragBar", minWidth: 400, minHeight: 320 },
     { id: "counterWindow", bar: "counterDragBar", minWidth: 380, minHeight: 320 },
-    { id: "icoConverterWindow", bar: "icoConverterDragBar", minWidth: 400, minHeight: 400 }
+    { id: "icoConverterWindow", bar: "icoConverterDragBar", minWidth: 400, minHeight: 400 },
+    { id: "qrWindow", bar: "qrDragBar", minWidth: 360, minHeight: 420 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));
@@ -2279,4 +2301,127 @@ function initIcoConverterApp() {
 
     setIcoStatus(lang === 'ja' ? 'ダウンロードを開始しました' : 'Download started', 'ok');
   });
+}
+/* =========================
+   QRコードジェネレーター
+========================= */
+function openQrCode() {
+  registerWindowOpen("qrWindow");
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  document.getElementById("qrText")?.focus();
+}
+
+function closeQrCode() {
+  closeManagedWindow("qrWindow");
+}
+
+function clearQrCode() {
+  const textarea = document.getElementById("qrText");
+  if (!textarea) return;
+
+  textarea.value = "";
+  generateQrCode();
+  textarea.focus();
+}
+
+function setQrStatus(msg) {
+  const statusEl = document.getElementById("qrStatus");
+  if (statusEl) statusEl.textContent = msg || "";
+}
+
+function generateQrCode() {
+  const textarea = document.getElementById("qrText");
+  const canvas = document.getElementById("qrCanvas");
+  const preview = document.getElementById("qrPreview");
+  const downloadBtn = document.getElementById("qrDownloadBtn");
+  const errorLevelSelect = document.getElementById("qrErrorLevel");
+  const cellSizeInput = document.getElementById("qrCellSize");
+
+  if (!textarea || !canvas || !preview) return;
+
+  const text = textarea.value;
+
+  if (!text) {
+    preview.classList.remove("has-code");
+    if (downloadBtn) downloadBtn.disabled = true;
+    setQrStatus("");
+    return;
+  }
+
+  const errorLevel = errorLevelSelect ? errorLevelSelect.value : "M";
+  const cellSize = cellSizeInput ? parseInt(cellSizeInput.value, 10) || 6 : 6;
+  const margin = cellSize * 2;
+
+  try {
+    // typeNumber 0 = 自動判定
+    const qr = qrcode(0, errorLevel);
+    qr.addData(text);
+    qr.make();
+
+    const moduleCount = qr.getModuleCount();
+    const size = moduleCount * cellSize + margin * 2;
+
+    canvas.width = size;
+    canvas.height = size;
+
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = "#000000";
+
+    for (let row = 0; row < moduleCount; row += 1) {
+      for (let col = 0; col < moduleCount; col += 1) {
+        if (qr.isDark(row, col)) {
+          ctx.fillRect(
+            margin + col * cellSize,
+            margin + row * cellSize,
+            cellSize,
+            cellSize
+          );
+        }
+      }
+    }
+
+    preview.classList.add("has-code");
+    if (downloadBtn) downloadBtn.disabled = false;
+    setQrStatus("");
+  } catch (err) {
+    preview.classList.remove("has-code");
+    if (downloadBtn) downloadBtn.disabled = true;
+    setQrStatus(data[lang].qrErrorTooLong);
+  }
+}
+
+function downloadQrCode() {
+  const canvas = document.getElementById("qrCanvas");
+  if (!canvas) return;
+
+  const url = canvas.toDataURL("image/png");
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "qrcode.png";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function initQrCodeApp() {
+  const textarea = document.getElementById("qrText");
+  const errorLevelSelect = document.getElementById("qrErrorLevel");
+  const cellSizeInput = document.getElementById("qrCellSize");
+  const downloadBtn = document.getElementById("qrDownloadBtn");
+
+  if (!textarea) return;
+
+  textarea.addEventListener("input", generateQrCode);
+  errorLevelSelect?.addEventListener("change", generateQrCode);
+  cellSizeInput?.addEventListener("input", generateQrCode);
+  downloadBtn?.addEventListener("click", downloadQrCode);
+
+  generateQrCode();
 }

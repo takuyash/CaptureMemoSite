@@ -76,6 +76,11 @@
       <div class="icon-label" data-i18n="icoConverter"></div>
     </div>
 
+  <div class="icon icon-qr" onclick="openQrCode()">
+      <span class="icon-image">🔳</span>
+      <div class="icon-label" data-i18n="qrCode"></div>
+    </div>
+
   <!-- TASKBAR -->
   <div class="taskbar">
     <div class="start" onclick="toggleStart()">⊞</div>
@@ -99,6 +104,7 @@
     <div onclick="openPhoto()" data-i18n="photo"></div>
     <div onclick="openCounter()" data-i18n="counter"></div>
     <div onclick="openIcoConverter()" data-i18n="icoConverter"></div>
+    <div onclick="openQrCode()" data-i18n="qrCode"></div>
   </div>
 
   <!-- WINDOW -->
@@ -473,6 +479,60 @@
 
   </div>
 
+  <!-- QR CODE WINDOW -->
+  <div class="window window-resizable qr-window" id="qrWindow" style="display:none;">
+
+    <div class="titlebar" id="qrDragBar">
+      <span data-i18n="qrCode"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="qrWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="qrWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="qrWindow">×</button>
+      </div>
+    </div>
+
+    <div class="qr-body">
+
+      <textarea
+        id="qrText"
+        class="qr-textarea"
+        data-i18n-placeholder="qrTextPlaceholder"
+        spellcheck="false"
+      ></textarea>
+
+      <div class="qr-options">
+        <label class="qr-option-label">
+          <span data-i18n="qrErrorLevelLabel"></span>
+          <select id="qrErrorLevel">
+            <option value="L">L (7%)</option>
+            <option value="M" selected>M (15%)</option>
+            <option value="Q">Q (25%)</option>
+            <option value="H">H (30%)</option>
+          </select>
+        </label>
+        <label class="qr-option-label">
+          <span data-i18n="qrCellSizeLabel"></span>
+          <input type="range" id="qrCellSize" min="3" max="12" value="6">
+        </label>
+      </div>
+
+      <div class="qr-preview" id="qrPreview">
+        <canvas id="qrCanvas"></canvas>
+        <div class="qr-empty" id="qrEmpty" data-i18n="qrEmptyText"></div>
+      </div>
+
+      <div class="qr-actions">
+        <button type="button" class="qr-download-btn" id="qrDownloadBtn" disabled data-i18n="qrDownloadBtn"></button>
+        <button type="button" class="qr-clear-btn" onclick="clearQrCode()" data-i18n="clear"></button>
+      </div>
+
+      <div class="qr-status" id="qrStatus"></div>
+
+    </div>
+
+  </div>
+
+<script src="qrcode-lib.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
