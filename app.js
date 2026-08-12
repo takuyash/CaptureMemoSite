@@ -762,6 +762,27 @@ function toggleStart() {
       : "block";
 }
 
+/* スタートメニュー外をクリックしたら閉じる */
+document.addEventListener("click", e => {
+  const menu = document.getElementById("startMenu");
+  const startButton = document.querySelector(".start");
+
+  if (!menu) return;
+
+  // メニュー内、またはスタートボタンをクリックした場合は何もしない
+  if (
+    menu.contains(e.target) ||
+    startButton?.contains(e.target)
+  ) {
+    return;
+  }
+
+  // メニューが開いている場合だけ閉じる
+  if (menu.style.display === "block") {
+    menu.style.display = "none";
+  }
+});
+
 /* =========================
    アプリ起動
 ========================= */
