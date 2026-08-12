@@ -85,6 +85,13 @@ const data = {
     barcodeEmptyText: "文字列を入力するとバーコードが表示されます",
     barcodeDownloadBtn: "PNGをダウンロード",
     barcodeErrorInvalid: "半角英数字・記号（ASCII 32〜126）のみ入力できます",
+    stopwatch: "ストップウォッチ",
+    stopwatchStart: "開始",
+    stopwatchStop: "停止",
+    stopwatchLap: "ラップ",
+    stopwatchReset: "リセット",
+    stopwatchNoLaps: "ラップタイムはありません",
+    stopwatchLapLabel: "ラップ",
     envTitle: "環境",
     env: "Windows 10 / 11",
     licenseTitle: "ライセンス",
@@ -214,6 +221,13 @@ const data = {
     barcodeEmptyText: "Enter text to generate a barcode",
     barcodeDownloadBtn: "Download PNG",
     barcodeErrorInvalid: "Only ASCII letters, numbers, and symbols (32\u2013126) are supported",
+    stopwatch: "Stopwatch",
+    stopwatchStart: "Start",
+    stopwatchStop: "Stop",
+    stopwatchLap: "Lap",
+    stopwatchReset: "Reset",
+    stopwatchNoLaps: "No lap times yet",
+    stopwatchLapLabel: "Lap",
     envTitle: "Environment",
     env: "Windows 10 / 11",
     licenseTitle: "License",
@@ -464,6 +478,7 @@ const WINDOW_CONFIG = [
   { id: "qrWindow", titleKey: "qrCode" },
   { id: "zenkakuWindow", titleKey: "zenkaku" },
   { id: "barcodeWindow", titleKey: "barcode" },
+  { id: "stopwatchWindow", titleKey: "stopwatch" },
 ];
 
 const windowState = Object.fromEntries(
@@ -1657,6 +1672,9 @@ function render() {
     barcodeText.placeholder = d.barcodeTextPlaceholder;
   }
 
+  updateStopwatchButtons();
+  renderStopwatchLaps();
+
   const usageList = document.getElementById("usageList");
 
 if (usageList) {
@@ -1864,6 +1882,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initQrCodeApp();
   initZenkakuApp();
   initBarcodeApp();
+  initStopwatchApp();
 });
 
 /* =========================
@@ -2002,7 +2021,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "icoConverterWindow", bar: "icoConverterDragBar", minWidth: 400, minHeight: 400 },
     { id: "qrWindow", bar: "qrDragBar", minWidth: 360, minHeight: 420 },
     { id: "zenkakuWindow", bar: "zenkakuDragBar", minWidth: 480, minHeight: 360 },
-    { id: "barcodeWindow", bar: "barcodeDragBar", minWidth: 380, minHeight: 360 }
+    { id: "barcodeWindow", bar: "barcodeDragBar", minWidth: 380, minHeight: 360 },
+    { id: "stopwatchWindow", bar: "stopwatchDragBar", minWidth: 320, minHeight: 400 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));
@@ -2861,4 +2881,134 @@ function initBarcodeApp() {
   downloadBtn?.addEventListener("click", downloadBarcode);
 
   generateBarcode();
+}
+
+/* =========================
+   ストップウォッチ
+========================= */
+let stopwatchRunning = false;
+let stopwatchStartTimestamp = 0;
+let stopwatchElapsedMs = 0;
+let stopwatchTimerId = null;
+let stopwatchLaps = [];
+
+function formatStopwatchTime(ms) {
+  const pad = (n, len = 2) => String(n).padStart(len, "0");
+
+  const totalCentis = Math.floor(ms / 10);
+  const centis = totalCentis % 100;
+  const totalSeconds = Math.floor(totalCentis / 100);
+  const seconds = totalSeconds % 60;
+  const totalMinutes = Math.floor(totalSeconds / 60);
+  const minutes = totalMinutes % 60;
+  const hours = Math.floor(totalMinutes / 60);
+
+  return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}.${pad(centis)}`;
+}
+
+function getStopwatchElapsed() {
+  if (!stopwatchRunning) return stopwatchElapsedMs;
+  return stopwatchElapsedMs + (Date.now() - stopwatchStartTimestamp);
+}
+
+function updateStopwatchDisplay() {
+  const display = document.getElementById("stopwatchDisplay");
+  if (display) {
+    display.textContent = formatStopwatchTime(getStopwatchElapsed());
+  }
+}
+
+function updateStopwatchButtons() {
+  const startBtn = document.getElementById("stopwatchStartBtn");
+  const lapBtn = document.getElementById("stopwatchLapBtn");
+  const resetBtn = document.getElementById("stopwatchResetBtn");
+  if (!startBtn) return;
+
+  const d = data[lang];
+
+  startBtn.textContent = stopwatchRunning ? d.stopwatchStop : d.stopwatchStart;
+  startBtn.classList.toggle("running", stopwatchRunning);
+
+  if (lapBtn) lapBtn.disabled = !stopwatchRunning;
+  if (resetBtn) resetBtn.disabled = stopwatchRunning || getStopwatchElapsed() === 0;
+}
+
+function renderStopwatchLaps() {
+  const container = document.getElementById("stopwatchLaps");
+  const list = document.getElementById("stopwatchLapsList");
+  if (!container || !list) return;
+
+  container.classList.toggle("has-laps", stopwatchLaps.length > 0);
+
+  const label = data[lang].stopwatchLapLabel;
+
+  list.innerHTML = stopwatchLaps
+    .map((lap, i) => {
+      const num = stopwatchLaps.length - i;
+      return `<div class="stopwatch-lap-row">
+        <span class="stopwatch-lap-number">${label} ${num}</span>
+        <span class="stopwatch-lap-split">${formatStopwatchTime(lap.split)}</span>
+        <span class="stopwatch-lap-total">${formatStopwatchTime(lap.total)}</span>
+      </div>`;
+    })
+    .join("");
+}
+
+function toggleStopwatch() {
+  if (stopwatchRunning) {
+    stopwatchElapsedMs = getStopwatchElapsed();
+    stopwatchRunning = false;
+    clearInterval(stopwatchTimerId);
+    stopwatchTimerId = null;
+  } else {
+    stopwatchRunning = true;
+    stopwatchStartTimestamp = Date.now();
+    stopwatchTimerId = setInterval(updateStopwatchDisplay, 10);
+  }
+
+  updateStopwatchDisplay();
+  updateStopwatchButtons();
+}
+
+function lapStopwatch() {
+  if (!stopwatchRunning) return;
+
+  const total = getStopwatchElapsed();
+  const prevTotal = stopwatchLaps.length ? stopwatchLaps[0].total : 0;
+  const split = total - prevTotal;
+
+  stopwatchLaps.unshift({ total, split });
+  renderStopwatchLaps();
+}
+
+function resetStopwatch() {
+  if (stopwatchRunning) return;
+
+  stopwatchElapsedMs = 0;
+  stopwatchLaps = [];
+  updateStopwatchDisplay();
+  updateStopwatchButtons();
+  renderStopwatchLaps();
+}
+
+function openStopwatch() {
+  registerWindowOpen("stopwatchWindow");
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+}
+
+function initStopwatchApp() {
+  const startBtn = document.getElementById("stopwatchStartBtn");
+  if (!startBtn) return;
+
+  startBtn.addEventListener("click", toggleStopwatch);
+  document.getElementById("stopwatchLapBtn")?.addEventListener("click", lapStopwatch);
+  document.getElementById("stopwatchResetBtn")?.addEventListener("click", resetStopwatch);
+
+  updateStopwatchDisplay();
+  updateStopwatchButtons();
+  renderStopwatchLaps();
 }
