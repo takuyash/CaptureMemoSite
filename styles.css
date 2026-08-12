@@ -83,6 +83,8 @@ body {
   bottom: 42px;
   left: 0;
   width: 220px;
+  max-height: calc(100vh - 50px);
+  overflow-y: auto;
   background: rgba(30,30,30,0.95);
   display: none;
   color: white;
