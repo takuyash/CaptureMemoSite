@@ -482,22 +482,29 @@ const photoFiles = [
 const TASKBAR_HEIGHT = 42;
 let windowZIndex = 10;
 
+/*
+ * desktop / startMenu: そのアプリをデスクトップアイコン・スタートメニューに
+ * 出すかどうか（表示/非表示の切り替えはここを true/false にするだけ）
+ * 配列の並び順 = デスクトップアイコンの並び順（縦方向に積んで、
+ * 画面の高さで折り返して次の列へ）＝ スタートメニューの並び順
+ * onOpen: アイコン/メニュー項目クリック時に呼ぶ関数
+ */
 const WINDOW_CONFIG = [
-  { id: "appWindow", titleKey: "appCaptureMemo", icon: "📄" },
-  { id: "calcWindow", titleKey: "calculator", icon: "🧮" },
-  { id: "notepadWindow", titleKey: "notepad", icon: "📝" },
-  { id: "paintWindow", titleKey: "paint", icon: "🎨" },
-  { id: "terminalWindow", titleKey: "terminal", icon: "💻" },
-  { id: "browserWindow", titleKey: "browser", icon: "🌐" },
-  { id: "photoWindow", titleKey: "photo", icon: "🖼️" },
-  { id: "stickyNoteWindow", titleKey: "stickyNote", icon: "📌" } ,
-  { id: "counterWindow", titleKey: "counter", icon: "🔤" },
-  { id: "icoConverterWindow", titleKey: "icoConverter", icon: "🔄" },
-  { id: "qrWindow", titleKey: "qrCode", icon: "🔳" },
-  { id: "zenkakuWindow", titleKey: "zenkaku", icon: "🔠" },
-  { id: "barcodeWindow", titleKey: "barcode", icon: "🏷️" },
-  { id: "stopwatchWindow", titleKey: "stopwatch", icon: "⏱️" },
-  { id: "settingsWindow", titleKey: "settings", icon: "⚙️" },
+  { id: "calcWindow", titleKey: "calculator", icon: "🧮", onOpen: openCalculator, desktop: true, startMenu: true },
+  { id: "appWindow", titleKey: "appCaptureMemo", icon: "📄", onOpen: () => openApp("overview"), desktop: true, startMenu: true },
+  { id: "notepadWindow", titleKey: "notepad", icon: "📝", onOpen: openNotepad, desktop: true, startMenu: true },
+  { id: "paintWindow", titleKey: "paint", icon: "🎨", onOpen: openPaint, desktop: true, startMenu: true },
+  { id: "terminalWindow", titleKey: "terminal", icon: "💻", onOpen: openTerminal, desktop: true, startMenu: true },
+  { id: "browserWindow", titleKey: "browser", icon: "🌐", onOpen: openBrowser, desktop: true, startMenu: true },
+  { id: "stickyNoteWindow", titleKey: "stickyNote", icon: "📌", onOpen: openStickyNote, desktop: true, startMenu: true },
+  { id: "photoWindow", titleKey: "photo", icon: "🖼️", onOpen: openPhoto, desktop: true, startMenu: true },
+  { id: "counterWindow", titleKey: "counter", icon: "🔤", onOpen: openCounter, desktop: true, startMenu: true },
+  { id: "icoConverterWindow", titleKey: "icoConverter", icon: "🔄", onOpen: openIcoConverter, desktop: true, startMenu: true },
+  { id: "qrWindow", titleKey: "qrCode", icon: "🔳", onOpen: openQrCode, desktop: true, startMenu: true },
+  { id: "zenkakuWindow", titleKey: "zenkaku", icon: "🔠", onOpen: openZenkaku, desktop: true, startMenu: true },
+  { id: "barcodeWindow", titleKey: "barcode", icon: "🏷️", onOpen: openBarcode, desktop: true, startMenu: true },
+  { id: "stopwatchWindow", titleKey: "stopwatch", icon: "⏱️", onOpen: openStopwatch, desktop: true, startMenu: true },
+  { id: "settingsWindow", titleKey: "settings", icon: "⚙️", onOpen: openSettings, desktop: true, startMenu: true },
 ];
 
 const windowState = Object.fromEntries(
@@ -724,6 +731,78 @@ function updateTaskbar() {
     };
 
     container.appendChild(btn);
+  });
+}
+
+/* =========================
+   デスクトップアイコン生成
+   （WINDOW_CONFIG の並び順・desktopフラグを見て
+     必要なDIVだけをJSで生成する）
+========================= */
+const DESKTOP_ICON_SLOT = 100; // 1アイコンあたりの高さ（アイコン88px + 隙間12px）
+const DESKTOP_ICON_TOP_OFFSET = 40; // 上下の余白合計（top:20pxぶん×2）
+
+function updateDesktopIconRows() {
+  const container = document.getElementById("desktopIcons");
+  if (!container) return;
+
+  const availableHeight = window.innerHeight - TASKBAR_HEIGHT - DESKTOP_ICON_TOP_OFFSET;
+  const rows = Math.max(1, Math.floor(availableHeight / DESKTOP_ICON_SLOT));
+
+  container.style.setProperty("--icon-rows", rows);
+}
+
+function renderDesktopIcons() {
+  const container = document.getElementById("desktopIcons");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  WINDOW_CONFIG.forEach(({ id, titleKey, icon, onOpen, desktop }) => {
+    if (!desktop) return;
+
+    const iconEl = document.createElement("div");
+    iconEl.className = "icon";
+    iconEl.dataset.windowId = id;
+    iconEl.onclick = onOpen;
+
+    const image = document.createElement("span");
+    image.className = "icon-image";
+    image.textContent = icon;
+
+    const label = document.createElement("div");
+    label.className = "icon-label";
+    label.dataset.i18n = titleKey;
+    label.textContent = data[lang][titleKey] || "";
+
+    iconEl.appendChild(image);
+    iconEl.appendChild(label);
+    container.appendChild(iconEl);
+  });
+
+  updateDesktopIconRows();
+}
+
+/* =========================
+   スタートメニュー生成
+   （同じく WINDOW_CONFIG から生成。表示順や表示/非表示の
+     切り替えは WINDOW_CONFIG を編集するだけでよい）
+========================= */
+function renderStartMenu() {
+  const menu = document.getElementById("startMenu");
+  if (!menu) return;
+
+  menu.innerHTML = "";
+
+  WINDOW_CONFIG.forEach(({ titleKey, onOpen, startMenu }) => {
+    if (!startMenu) return;
+
+    const item = document.createElement("div");
+    item.dataset.i18n = titleKey;
+    item.textContent = data[lang][titleKey] || "";
+    item.onclick = onOpen;
+
+    menu.appendChild(item);
   });
 }
 
@@ -1876,11 +1955,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   initBackground();
 
+  renderDesktopIcons();
+  renderStartMenu();
+
   render();
 
   initWindowControls();
   initWindowStates();
   updateTaskbar();
+
+  window.addEventListener("resize", updateDesktopIconRows);
 
   const notepadText = document.getElementById("notepadText");
   if (notepadText) {

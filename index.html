@@ -21,85 +21,8 @@
 
 <div class="desktop">
 
-  <!-- DESKTOP ICONS -->
-  <div class="desktop-icons">
-
-    <div class="icon" onclick="openApp('overview')">
-      <span class="icon-image">📄</span>
-      <div class="icon-label" data-i18n="appCaptureMemo"></div>
-    </div>
-
-    <div class="icon" onclick="openCalculator()">
-      <span class="icon-image">🧮</span>
-      <div class="icon-label" data-i18n="calculator"></div>
-    </div>
-
-    <div class="icon" onclick="openNotepad()">
-      <span class="icon-image">📝</span>
-      <div class="icon-label" data-i18n="notepad"></div>
-    </div>
-
-    <div class="icon" onclick="openPaint()">
-      <span class="icon-image">🎨</span>
-      <div class="icon-label" data-i18n="paint"></div>
-    </div>
-
-    <div class="icon" onclick="openTerminal()">
-      <span class="icon-image">💻</span>
-      <div class="icon-label" data-i18n="terminal"></div>
-    </div>
-    
-    <div class="icon" onclick="openBrowser()">
-      <span class="icon-image">🌐</span>
-      <div class="icon-label" data-i18n="browser"></div>
-    </div>
-
-  </div>
-  
-  <div class="icon icon-sticky-note" onclick="openStickyNote()">
-      <span class="icon-image">📌</span>
-      <div class="icon-label" data-i18n="stickyNote"></div>
-  </div>
-    
-  <div class="icon icon-photo" onclick="openPhoto()">
-      <span class="icon-image">🖼️</span>
-      <div class="icon-label" data-i18n="photo"></div>
-  </div>
-    
-  <div class="icon icon-counter" onclick="openCounter()">
-      <span class="icon-image">🔤</span>
-      <div class="icon-label" data-i18n="counter"></div>
-  </div>
-  
-  <div class="icon icon-ico-converter" onclick="openIcoConverter()">
-      <span class="icon-image">🔄</span>
-      <div class="icon-label" data-i18n="icoConverter"></div>
-    </div>
-
-  <div class="icon icon-qr" onclick="openQrCode()">
-      <span class="icon-image">🔳</span>
-      <div class="icon-label" data-i18n="qrCode"></div>
-    </div>
-
-  <div class="icon icon-zenkaku" onclick="openZenkaku()">
-      <span class="icon-image">🔠</span>
-      <div class="icon-label" data-i18n="zenkaku"></div>
-    </div>
-
-  <div class="icon icon-barcode" onclick="openBarcode()">
-      <span class="icon-image">🏷️</span>
-      <div class="icon-label" data-i18n="barcode"></div>
-    </div>
-
-  <div class="icon icon-stopwatch" onclick="openStopwatch()">
-      <span class="icon-image">⏱️</span>
-      <div class="icon-label" data-i18n="stopwatch"></div>
-    </div>
-
-  <div class="icon icon-settings" onclick="openSettings()">
-      <span class="icon-image">⚙️</span>
-      <div class="icon-label" data-i18n="settings"></div>
-    </div>
+  <!-- DESKTOP ICONS（並び順・表示/非表示は app.js の WINDOW_CONFIG で管理し、JSでDIVを生成） -->
+  <div class="desktop-icons" id="desktopIcons"></div>
 
   <!-- TASKBAR -->
   <div class="taskbar">
@@ -112,24 +35,8 @@
     <div class="calendar" id="calendar"></div>
   </div>
 
-  <!-- START MENU -->
-  <div class="start-menu" id="startMenu">
-    <div onclick="openApp('overview')" data-i18n="appCaptureMemo"></div>
-    <div onclick="openCalculator()" data-i18n="calculator"></div>
-    <div onclick="openNotepad()" data-i18n="notepad"></div>
-    <div onclick="openPaint()" data-i18n="paint"></div>
-    <div onclick="openTerminal()" data-i18n="terminal"></div>
-    <div onclick="openBrowser()" data-i18n="browser"></div>
-    <div onclick="openStickyNote()" data-i18n="stickyNote"></div>
-    <div onclick="openPhoto()" data-i18n="photo"></div>
-    <div onclick="openCounter()" data-i18n="counter"></div>
-    <div onclick="openIcoConverter()" data-i18n="icoConverter"></div>
-    <div onclick="openQrCode()" data-i18n="qrCode"></div>
-    <div onclick="openZenkaku()" data-i18n="zenkaku"></div>
-    <div onclick="openBarcode()" data-i18n="barcode"></div>
-    <div onclick="openStopwatch()" data-i18n="stopwatch"></div>
-    <div onclick="openSettings()" data-i18n="settings"></div>
-  </div>
+  <!-- START MENU（中身は app.js の WINDOW_CONFIG から生成） -->
+  <div class="start-menu" id="startMenu"></div>
 
   <!-- WINDOW -->
   <div class="window window-resizable" id="appWindow">
