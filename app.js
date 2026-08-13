@@ -92,6 +92,15 @@ const data = {
     stopwatchReset: "リセット",
     stopwatchNoLaps: "ラップタイムはありません",
     stopwatchLapLabel: "ラップ",
+    settings: "設定",
+    settingsBgTitle: "背景画像",
+    settingsBgDesc: "デスクトップの背景に使う画像を選択してください。",
+    settingsLangTitle: "言語",
+    settingsDataTitle: "保存データの管理",
+    settingsDataDesc: "メモ帳・ペイント・背景設定など、このブラウザに保存されたデータを削除します。",
+    settingsClearDataBtn: "保存データを削除",
+    settingsClearConfirm: "保存されたデータをすべて削除します。よろしいですか？",
+    settingsDataCleared: "削除しました",
     envTitle: "環境",
     env: "Windows 10 / 11",
     licenseTitle: "ライセンス",
@@ -228,6 +237,15 @@ const data = {
     stopwatchReset: "Reset",
     stopwatchNoLaps: "No lap times yet",
     stopwatchLapLabel: "Lap",
+    settings: "Settings",
+    settingsBgTitle: "Desktop Background",
+    settingsBgDesc: "Choose an image to use as the desktop background.",
+    settingsLangTitle: "Language",
+    settingsDataTitle: "Manage Saved Data",
+    settingsDataDesc: "Delete data saved in this browser, such as Notepad, Paint, and background settings.",
+    settingsClearDataBtn: "Clear Saved Data",
+    settingsClearConfirm: "This will delete all saved data. Continue?",
+    settingsDataCleared: "Cleared",
     envTitle: "Environment",
     env: "Windows 10 / 11",
     licenseTitle: "License",
@@ -479,6 +497,7 @@ const WINDOW_CONFIG = [
   { id: "zenkakuWindow", titleKey: "zenkaku", icon: "🔠" },
   { id: "barcodeWindow", titleKey: "barcode", icon: "🏷️" },
   { id: "stopwatchWindow", titleKey: "stopwatch", icon: "⏱️" },
+  { id: "settingsWindow", titleKey: "settings", icon: "⚙️" },
 ];
 
 const windowState = Object.fromEntries(
@@ -1833,6 +1852,11 @@ if (infoList) {
     renderPhotoThumbs();
   }
 
+  if (settingsBooted) {
+    renderSettingsBgGrid();
+    updateSettingsLangButtons();
+  }
+
   updateWindowControlLabels();
   updateTaskbar();
 }
@@ -1846,19 +1870,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (langBtn) {
     langBtn.onclick = () => {
-
-      lang = lang === "ja"
-        ? "en"
-        : "ja";
-
-      langBtn.innerText =
-        lang === "ja"
-          ? "EN"
-          : "JA";
-
-      render();
+      setLang(lang === "ja" ? "en" : "ja");
     };
   }
+
+  initBackground();
 
   render();
 
@@ -1884,6 +1900,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initZenkakuApp();
   initBarcodeApp();
   initStopwatchApp();
+  initSettingsApp();
 });
 
 /* =========================
@@ -2023,7 +2040,8 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "qrWindow", bar: "qrDragBar", minWidth: 360, minHeight: 420 },
     { id: "zenkakuWindow", bar: "zenkakuDragBar", minWidth: 480, minHeight: 360 },
     { id: "barcodeWindow", bar: "barcodeDragBar", minWidth: 380, minHeight: 360 },
-    { id: "stopwatchWindow", bar: "stopwatchDragBar", minWidth: 320, minHeight: 400 }
+    { id: "stopwatchWindow", bar: "stopwatchDragBar", minWidth: 320, minHeight: 400 },
+    { id: "settingsWindow", bar: "settingsDragBar", minWidth: 420, minHeight: 420 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
     makeDraggable(win, document.getElementById(bar));
@@ -3012,4 +3030,124 @@ function initStopwatchApp() {
   updateStopwatchDisplay();
   updateStopwatchButtons();
   renderStopwatchLaps();
+}
+
+/* =========================
+   設定アプリ
+========================= */
+const BG_STORAGE_KEY = "desktop-bg";
+const DEFAULT_BG = "assets/bg.png";
+let settingsBooted = false;
+
+function applyBackground(file) {
+  document.body.style.backgroundImage = `url("${file}")`;
+}
+
+function initBackground() {
+  const saved = localStorage.getItem(BG_STORAGE_KEY);
+  if (saved) {
+    applyBackground(saved);
+  }
+}
+
+function selectBackground(file) {
+  applyBackground(file);
+  localStorage.setItem(BG_STORAGE_KEY, file);
+  renderSettingsBgGrid();
+}
+
+function renderSettingsBgGrid() {
+  const grid = document.getElementById("settingsBgGrid");
+  if (!grid) return;
+
+  const current = localStorage.getItem(BG_STORAGE_KEY) || DEFAULT_BG;
+
+  grid.innerHTML = photoFiles
+    .map(p => `
+      <button
+        type="button"
+        class="settings-bg-thumb${p.file === current ? " active" : ""}"
+        onclick="selectBackground('${p.file}')"
+        title="${p.caption}"
+      >
+        <img src="${p.file}" alt="${p.caption}">
+      </button>
+    `)
+    .join("");
+}
+
+function updateSettingsLangButtons() {
+  const jaBtn = document.getElementById("settingsLangJa");
+  const enBtn = document.getElementById("settingsLangEn");
+  if (!jaBtn || !enBtn) return;
+
+  jaBtn.classList.toggle("active", lang === "ja");
+  enBtn.classList.toggle("active", lang === "en");
+}
+
+function setLang(newLang) {
+  if (newLang !== "ja" && newLang !== "en") return;
+  if (lang === newLang) return;
+
+  lang = newLang;
+
+  const langBtn = document.getElementById("langBtn");
+  if (langBtn) {
+    langBtn.innerText = lang === "ja" ? "EN" : "JA";
+  }
+
+  render();
+}
+
+function clearAllSavedData() {
+  localStorage.removeItem("notepad-content");
+  localStorage.removeItem("paint-content");
+  localStorage.removeItem(BG_STORAGE_KEY);
+
+  const notepadText = document.getElementById("notepadText");
+  if (notepadText) {
+    notepadText.value = "";
+  }
+
+  if (typeof clearPaintCanvas === "function") {
+    clearPaintCanvas();
+  }
+
+  document.body.style.backgroundImage = "";
+  renderSettingsBgGrid();
+
+  const status = document.getElementById("settingsStatus");
+  if (status) {
+    status.textContent = data[lang].settingsDataCleared;
+    setTimeout(() => {
+      status.textContent = "";
+    }, 2500);
+  }
+}
+
+function openSettings() {
+  registerWindowOpen("settingsWindow");
+
+  if (!settingsBooted) {
+    settingsBooted = true;
+    renderSettingsBgGrid();
+    updateSettingsLangButtons();
+  }
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+}
+
+function closeSettings() {
+  closeManagedWindow("settingsWindow");
+}
+
+function initSettingsApp() {
+  document.getElementById("settingsClearDataBtn")?.addEventListener("click", () => {
+    if (confirm(data[lang].settingsClearConfirm)) {
+      clearAllSavedData();
+    }
+  });
 }

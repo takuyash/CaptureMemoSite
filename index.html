@@ -96,6 +96,11 @@
       <div class="icon-label" data-i18n="stopwatch"></div>
     </div>
 
+  <div class="icon icon-settings" onclick="openSettings()">
+      <span class="icon-image">⚙️</span>
+      <div class="icon-label" data-i18n="settings"></div>
+    </div>
+
   <!-- TASKBAR -->
   <div class="taskbar">
     <div class="start" onclick="toggleStart()">⊞</div>
@@ -123,6 +128,7 @@
     <div onclick="openZenkaku()" data-i18n="zenkaku"></div>
     <div onclick="openBarcode()" data-i18n="barcode"></div>
     <div onclick="openStopwatch()" data-i18n="stopwatch"></div>
+    <div onclick="openSettings()" data-i18n="settings"></div>
   </div>
 
   <!-- WINDOW -->
@@ -695,6 +701,45 @@
       <div class="stopwatch-laps" id="stopwatchLaps">
         <div class="stopwatch-laps-empty" id="stopwatchLapsEmpty" data-i18n="stopwatchNoLaps"></div>
         <div class="stopwatch-laps-list" id="stopwatchLapsList"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SETTINGS WINDOW -->
+  <div class="window window-resizable settings-window" id="settingsWindow" style="display:none;">
+
+    <div class="titlebar" id="settingsDragBar">
+      <span data-i18n="settings"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="settingsWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="settingsWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="settingsWindow">×</button>
+      </div>
+    </div>
+
+    <div class="settings-body">
+
+      <div class="settings-section">
+        <h3 data-i18n="settingsBgTitle"></h3>
+        <p class="settings-desc" data-i18n="settingsBgDesc"></p>
+        <div class="settings-bg-grid" id="settingsBgGrid"></div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="settingsLangTitle"></h3>
+        <div class="settings-lang-buttons">
+          <button type="button" class="settings-lang-btn" id="settingsLangJa" onclick="setLang('ja')">日本語</button>
+          <button type="button" class="settings-lang-btn" id="settingsLangEn" onclick="setLang('en')">English</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="settingsDataTitle"></h3>
+        <p class="settings-desc" data-i18n="settingsDataDesc"></p>
+        <button type="button" class="settings-danger-btn" id="settingsClearDataBtn" data-i18n="settingsClearDataBtn"></button>
+        <span class="settings-status" id="settingsStatus"></span>
       </div>
 
     </div>
