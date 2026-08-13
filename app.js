@@ -471,6 +471,9 @@ const browserFavorites = [
 const photoFiles = [
   { file: "assets/CaptureMemo.png", caption: "CaptureMemo.png" },
   { file: "assets/bg.png", caption: "bg.png" },
+  { file: "assets/bg1.png", caption: "bg1.png" },
+  { file: "assets/bg2.png", caption: "bg2.png" },
+  { file: "assets/bg3.png", caption: "bg3.png" },
   { file: "assets/download.png", caption: "download.png" },
   { file: "assets/execute.png", caption: "execute.png" },
   { file: "assets/thawing.png", caption: "thawing.png" }
