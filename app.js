@@ -102,6 +102,7 @@ const data = {
     hepburnMacronLabel: "長音をマクロンで表記（ō / ū など）",
     hepburnUppercaseLabel: "大文字で出力",
     hepburnNote: "主に標準的なヘボン式を想定しています。助詞の「は・へ」などは発音ではなく、入力された仮名をそのまま変換します。",
+    tableDiff: "テーブル差分比較",
     settings: "設定",
     settingsBgTitle: "背景画像",
     settingsBgDesc: "デスクトップの背景に使う画像を選択してください。",
@@ -257,6 +258,7 @@ const data = {
     hepburnMacronLabel: "Use macrons for long vowels (ō, ū, etc.)",
     hepburnUppercaseLabel: "Output in uppercase",
     hepburnNote: "Assumes standard Hepburn romanization. Particles such as \u306f/\u3078 are converted as typed, not by pronunciation.",
+    tableDiff: "Table Diff",
     settings: "Settings",
     settingsBgTitle: "Desktop Background",
     settingsBgDesc: "Choose an image to use as the desktop background.",
@@ -529,6 +531,7 @@ const WINDOW_CONFIG = [
   { id: "stopwatchWindow", titleKey: "stopwatch", icon: "⏱️", onOpen: openStopwatch, desktop: true, startMenu: true },
   { id: "hepburnWindow", titleKey: "hepburn", icon: "🔡", onOpen: openHepburn, desktop: true, startMenu: true },
   { id: "settingsWindow", titleKey: "settings", icon: "⚙️", onOpen: openSettings, desktop: true, startMenu: true },
+  { id: "tableDiffWindow", titleKey: "tableDiff", icon: "🔍", onOpen: openTableDiff, desktop: true, startMenu: true },
 ];
 
 const windowState = Object.fromEntries(
@@ -1967,6 +1970,15 @@ if (infoList) {
 
   updateWindowControlLabels();
   updateTaskbar();
+
+  /* TABLE DIFF LANGUAGE SYNC */
+  const tableDiffFrame = document.getElementById("tableDiffFrame");
+  if (tableDiffFrame) {
+    tableDiffFrame.contentWindow?.postMessage(
+      { type: "capturememo-language", lang },
+      "*"
+    );
+  }
 }
 
 /* =========================
@@ -2015,6 +2027,16 @@ document.addEventListener("DOMContentLoaded", () => {
   initStopwatchApp();
   initHepburnApp();
   initSettingsApp();
+
+  const tableDiffFrame = document.getElementById("tableDiffFrame");
+  if (tableDiffFrame) {
+    tableDiffFrame.addEventListener("load", () => {
+      tableDiffFrame.contentWindow?.postMessage(
+        { type: "capturememo-language", lang },
+        "*"
+      );
+    });
+  }
 });
 
 /* =========================
@@ -2156,6 +2178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "barcodeWindow", bar: "barcodeDragBar", minWidth: 380, minHeight: 360 },
     { id: "stopwatchWindow", bar: "stopwatchDragBar", minWidth: 320, minHeight: 400 },
     { id: "hepburnWindow", bar: "hepburnDragBar", minWidth: 420, minHeight: 420 },
+    { id: "tableDiffWindow", bar: "tableDiffDragBar", minWidth: 720, minHeight: 420 },
     { id: "settingsWindow", bar: "settingsDragBar", minWidth: 420, minHeight: 420 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
@@ -3494,6 +3517,23 @@ function clearAllSavedData() {
     setTimeout(() => {
       status.textContent = "";
     }, 2500);
+  }
+}
+
+function openTableDiff() {
+  registerWindowOpen("tableDiffWindow");
+
+  const frame = document.getElementById("tableDiffFrame");
+  if (frame) {
+    frame.contentWindow?.postMessage(
+      { type: "capturememo-language", lang },
+      "*"
+    );
+  }
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
   }
 }
 

@@ -663,6 +663,30 @@
 
   </div>
 
+
+  <!-- TABLE DIFF WINDOW -->
+  <div class="window window-resizable table-diff-window" id="tableDiffWindow" style="display:none;">
+
+    <div class="titlebar" id="tableDiffDragBar">
+      <span data-i18n="tableDiff"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="tableDiffWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="tableDiffWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="tableDiffWindow">×</button>
+      </div>
+    </div>
+
+    <div class="table-diff-body">
+      <iframe
+        id="tableDiffFrame"
+        class="table-diff-frame"
+        src="table-diff.html"
+        title="Table Diff"
+      ></iframe>
+    </div>
+
+  </div>
+
   <!-- SETTINGS WINDOW -->
   <div class="window window-resizable settings-window" id="settingsWindow" style="display:none;">
 
