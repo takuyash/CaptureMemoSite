@@ -530,6 +530,55 @@
 
   </div>
 
+  <!-- HEPBURN ROMANIZATION WINDOW -->
+  <div class="window window-resizable hepburn-window" id="hepburnWindow" style="display:none;">
+
+    <div class="titlebar" id="hepburnDragBar">
+      <span data-i18n="hepburn"></span>
+      <div class="controls">
+        <button type="button" class="win-btn win-minimize" data-window="hepburnWindow">─</button>
+        <button type="button" class="win-btn win-maximize" data-window="hepburnWindow">□</button>
+        <button type="button" class="win-btn win-close" data-window="hepburnWindow">×</button>
+      </div>
+    </div>
+
+    <div class="hepburn-body">
+
+      <p class="hepburn-col-label" data-i18n="hepburnInputLabel"></p>
+      <textarea
+        id="hepburnInput"
+        class="hepburn-textarea"
+        data-i18n-placeholder="hepburnInputPlaceholder"
+        spellcheck="false"
+      ></textarea>
+
+      <div class="hepburn-options">
+        <label class="hepburn-option-label">
+          <input type="checkbox" id="hepburnMacron" checked>
+          <span data-i18n="hepburnMacronLabel"></span>
+        </label>
+        <label class="hepburn-option-label">
+          <input type="checkbox" id="hepburnUppercase">
+          <span data-i18n="hepburnUppercaseLabel"></span>
+        </label>
+      </div>
+
+      <div class="hepburn-actions">
+        <button type="button" class="hepburn-convert-btn" id="hepburnConvertBtn" data-i18n="hepburnConvertBtn"></button>
+        <button type="button" class="hepburn-copy-btn" id="hepburnCopyBtn" data-i18n="hepburnCopyBtn"></button>
+        <button type="button" class="hepburn-clear-btn" id="hepburnClearBtn" data-i18n="clear"></button>
+        <span class="hepburn-status" id="hepburnStatus"></span>
+      </div>
+
+      <p class="hepburn-col-label" data-i18n="hepburnOutputLabel"></p>
+      <div id="hepburnOutput" class="hepburn-result"></div>
+
+      <p class="hepburn-note" data-i18n="hepburnNote"></p>
+
+    </div>
+
+  </div>
+
   <!-- BARCODE WINDOW -->
   <div class="window window-resizable barcode-window" id="barcodeWindow" style="display:none;">
 

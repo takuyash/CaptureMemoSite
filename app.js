@@ -92,6 +92,16 @@ const data = {
     stopwatchReset: "リセット",
     stopwatchNoLaps: "ラップタイムはありません",
     stopwatchLapLabel: "ラップ",
+    hepburn: "ヘボン式ローマ字変換",
+    hepburnInputLabel: "日本語",
+    hepburnInputPlaceholder: "例：てすと",
+    hepburnOutputLabel: "変換結果",
+    hepburnConvertBtn: "変換",
+    hepburnCopyBtn: "コピー",
+    hepburnCopied: "コピーしました",
+    hepburnMacronLabel: "長音をマクロンで表記（ō / ū など）",
+    hepburnUppercaseLabel: "大文字で出力",
+    hepburnNote: "主に標準的なヘボン式を想定しています。助詞の「は・へ」などは発音ではなく、入力された仮名をそのまま変換します。",
     settings: "設定",
     settingsBgTitle: "背景画像",
     settingsBgDesc: "デスクトップの背景に使う画像を選択してください。",
@@ -237,6 +247,16 @@ const data = {
     stopwatchReset: "Reset",
     stopwatchNoLaps: "No lap times yet",
     stopwatchLapLabel: "Lap",
+    hepburn: "Hepburn Romanization",
+    hepburnInputLabel: "Japanese",
+    hepburnInputPlaceholder: "e.g. てすと",
+    hepburnOutputLabel: "Result",
+    hepburnConvertBtn: "Convert",
+    hepburnCopyBtn: "Copy",
+    hepburnCopied: "Copied",
+    hepburnMacronLabel: "Use macrons for long vowels (ō, ū, etc.)",
+    hepburnUppercaseLabel: "Output in uppercase",
+    hepburnNote: "Assumes standard Hepburn romanization. Particles such as \u306f/\u3078 are converted as typed, not by pronunciation.",
     settings: "Settings",
     settingsBgTitle: "Desktop Background",
     settingsBgDesc: "Choose an image to use as the desktop background.",
@@ -507,6 +527,7 @@ const WINDOW_CONFIG = [
   { id: "zenkakuWindow", titleKey: "zenkaku", icon: "🔠", onOpen: openZenkaku, desktop: true, startMenu: true },
   { id: "barcodeWindow", titleKey: "barcode", icon: "🏷️", onOpen: openBarcode, desktop: true, startMenu: true },
   { id: "stopwatchWindow", titleKey: "stopwatch", icon: "⏱️", onOpen: openStopwatch, desktop: true, startMenu: true },
+  { id: "hepburnWindow", titleKey: "hepburn", icon: "🔡", onOpen: openHepburn, desktop: true, startMenu: true },
   { id: "settingsWindow", titleKey: "settings", icon: "⚙️", onOpen: openSettings, desktop: true, startMenu: true },
 ];
 
@@ -1774,6 +1795,11 @@ function render() {
     barcodeText.placeholder = d.barcodeTextPlaceholder;
   }
 
+  const hepburnInput = document.getElementById("hepburnInput");
+  if (hepburnInput) {
+    hepburnInput.placeholder = d.hepburnInputPlaceholder;
+  }
+
   updateStopwatchButtons();
   renderStopwatchLaps();
 
@@ -1987,6 +2013,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initZenkakuApp();
   initBarcodeApp();
   initStopwatchApp();
+  initHepburnApp();
   initSettingsApp();
 });
 
@@ -2128,6 +2155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: "zenkakuWindow", bar: "zenkakuDragBar", minWidth: 480, minHeight: 360 },
     { id: "barcodeWindow", bar: "barcodeDragBar", minWidth: 380, minHeight: 360 },
     { id: "stopwatchWindow", bar: "stopwatchDragBar", minWidth: 320, minHeight: 400 },
+    { id: "hepburnWindow", bar: "hepburnDragBar", minWidth: 420, minHeight: 420 },
     { id: "settingsWindow", bar: "settingsDragBar", minWidth: 420, minHeight: 420 }
   ].forEach(({ id, bar, minWidth, minHeight }) => {
     const win = document.getElementById(id);
@@ -2624,6 +2652,263 @@ function initQrCodeApp() {
   downloadBtn?.addEventListener("click", downloadQrCode);
 
   generateQrCode();
+}
+
+/* =========================
+   ヘボン式ローマ字変換ロジック
+========================= */
+function openHepburn() {
+  registerWindowOpen("hepburnWindow");
+
+  const menu = document.getElementById("startMenu");
+  if (menu) {
+    menu.style.display = "none";
+  }
+
+  document.getElementById("hepburnInput")?.focus();
+}
+
+function closeHepburn() {
+  closeManagedWindow("hepburnWindow");
+}
+
+// 標準的なヘボン式をベースにしたかな→ローマ字表
+const HEPBURN_TABLE = {
+  "あ":"a","い":"i","う":"u","え":"e","お":"o",
+  "か":"ka","き":"ki","く":"ku","け":"ke","こ":"ko",
+  "さ":"sa","し":"shi","す":"su","せ":"se","そ":"so",
+  "た":"ta","ち":"chi","つ":"tsu","て":"te","と":"to",
+  "な":"na","に":"ni","ぬ":"nu","ね":"ne","の":"no",
+  "は":"ha","ひ":"hi","ふ":"fu","へ":"he","ほ":"ho",
+  "ま":"ma","み":"mi","む":"mu","め":"me","も":"mo",
+  "や":"ya","ゆ":"yu","よ":"yo",
+  "ら":"ra","り":"ri","る":"ru","れ":"re","ろ":"ro",
+  "わ":"wa","を":"o",
+  "ん":"n",
+  "が":"ga","ぎ":"gi","ぐ":"gu","げ":"ge","ご":"go",
+  "ざ":"za","じ":"ji","ず":"zu","ぜ":"ze","ぞ":"zo",
+  "だ":"da","ぢ":"ji","づ":"zu","で":"de","ど":"do",
+  "ば":"ba","び":"bi","ぶ":"bu","べ":"be","ぼ":"bo",
+  "ぱ":"pa","ぴ":"pi","ぷ":"pu","ぺ":"pe","ぽ":"po",
+
+  "きゃ":"kya","きゅ":"kyu","きょ":"kyo",
+  "しゃ":"sha","しゅ":"shu","しょ":"sho",
+  "ちゃ":"cha","ちゅ":"chu","ちょ":"cho",
+  "にゃ":"nya","にゅ":"nyu","にょ":"nyo",
+  "ひゃ":"hya","ひゅ":"hyu","ひょ":"hyo",
+  "みゃ":"mya","みゅ":"myu","みょ":"myo",
+  "りゃ":"rya","りゅ":"ryu","りょ":"ryo",
+  "ぎゃ":"gya","ぎゅ":"gyu","ぎょ":"gyo",
+  "じゃ":"ja","じゅ":"ju","じょ":"jo",
+  "びゃ":"bya","びゅ":"byu","びょ":"byo",
+  "ぴゃ":"pya","ぴゅ":"pyu","ぴょ":"pyo",
+
+  // カタカナ由来の拡張音
+  "うぃ":"wi","うぇ":"we","うぉ":"wo",
+  "ゔぁ":"va","ゔぃ":"vi","ゔ":"vu","ゔぇ":"ve","ゔぉ":"vo",
+  "ゔゃ":"vya","ゔゅ":"vyu","ゔょ":"vyo",
+  "てぃ":"ti","でぃ":"di",
+  "とぅ":"tu","どぅ":"du",
+  "ふぁ":"fa","ふぃ":"fi","ふぇ":"fe","ふぉ":"fo",
+  "ふゅ":"fyu",
+  "しぇ":"she","じぇ":"je","ちぇ":"che",
+  "つぁ":"tsa","つぃ":"tsi","つぇ":"tse","つぉ":"tso",
+  "くぁ":"kwa","くぃ":"kwi","くぇ":"kwe","くぉ":"kwo",
+  "ぐぁ":"gwa","ぐぃ":"gwi","ぐぇ":"gwe","ぐぉ":"gwo",
+  "いぇ":"ye",
+  "でゅ":"dyu","てゅ":"tyu",
+  "にぇ":"nye",
+  "すぃ":"si","ずぃ":"zi",
+  "きぇ":"kye","ぎぇ":"gye",
+  "ひぇ":"hye","びぇ":"bye","ぴぇ":"pye",
+  "りぇ":"rye"
+};
+
+const hepburnKatakanaToHiragana = (text) =>
+  text.replace(/[\u30A1-\u30F6]/g, ch =>
+    String.fromCharCode(ch.charCodeAt(0) - 0x60)
+  );
+
+const HEPBURN_VOWELS = new Set(["a", "i", "u", "e", "o"]);
+
+function isHepburnConsonantStart(s) {
+  return /^[bcdfghjklmnpqrstvwxyz]/.test(s);
+}
+
+function convertHepburnLongVowel(result, macronEnabled) {
+  // 「ー」は直前の母音を長音として扱う
+  if (!result) return "ー";
+  const last = result[result.length - 1];
+  if (!/[aeiou]/.test(last)) return "ー";
+
+  if (!macronEnabled) return last;
+  return { a:"ā", i:"ī", u:"ū", e:"ē", o:"ō" }[last];
+}
+
+function convertHepburnText(text, macronEnabled, uppercaseEnabled) {
+  let s = hepburnKatakanaToHiragana(text);
+  let result = "";
+  let smallTsu = false;
+
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+
+    // 小さい「っ」
+    if (ch === "っ") {
+      smallTsu = true;
+      continue;
+    }
+
+    // 長音符
+    if (ch === "ー") {
+      result += convertHepburnLongVowel(result, macronEnabled);
+      continue;
+    }
+
+    // 改行・空白・記号はそのまま
+    if (!/[\u3040-\u309F]/.test(ch)) {
+      if (smallTsu) {
+        result += "っ";
+        smallTsu = false;
+      }
+      result += ch;
+      continue;
+    }
+
+    // 3文字→2文字→1文字の順で確認
+    let kana = s.slice(i, i + 3);
+    let roman = HEPBURN_TABLE[kana];
+    let consumed = 3;
+
+    if (!roman) {
+      kana = s.slice(i, i + 2);
+      roman = HEPBURN_TABLE[kana];
+      consumed = 2;
+    }
+
+    if (!roman) {
+      kana = ch;
+      roman = HEPBURN_TABLE[kana];
+      consumed = 1;
+    }
+
+    if (!roman) {
+      if (smallTsu) {
+        result += "っ";
+        smallTsu = false;
+      }
+      result += ch;
+      continue;
+    }
+
+    // ん：母音・yの前では n' とする
+    if (kana === "ん") {
+      const next = s[i + 1] || "";
+      const nextRoman = HEPBURN_TABLE[s.slice(i + 1, i + 3)] || HEPBURN_TABLE[next] || "";
+      if (nextRoman && (HEPBURN_VOWELS.has(nextRoman[0]) || nextRoman[0] === "y")) {
+        result += "n'";
+      } else {
+        result += "n";
+      }
+      continue;
+    }
+
+    // っ：次のローマ字の先頭子音を重ねる
+    if (smallTsu) {
+      if (isHepburnConsonantStart(roman)) {
+        // 例：まっちゃ → matcha（chの前はtを重ねる）
+        if (roman.startsWith("ch")) {
+          result += "t";
+        } else {
+          result += roman[0];
+        }
+      }
+      smallTsu = false;
+    }
+
+    result += roman;
+    i += consumed - 1;
+  }
+
+  if (smallTsu) result += "っ";
+
+  // macron OFF の場合、長音記号から生成された母音を含め、
+  // 既存のマクロンも通常母音へ戻す
+  if (!macronEnabled) {
+    result = result
+      .replaceAll("ā", "a")
+      .replaceAll("ī", "i")
+      .replaceAll("ū", "u")
+      .replaceAll("ē", "e")
+      .replaceAll("ō", "o");
+  }
+
+  return uppercaseEnabled ? result.toUpperCase() : result;
+}
+
+function setHepburnStatus(msg) {
+  const el = document.getElementById("hepburnStatus");
+  if (el) el.textContent = msg || "";
+}
+
+function runHepburnConvert() {
+  const input = document.getElementById("hepburnInput");
+  const output = document.getElementById("hepburnOutput");
+  const macron = document.getElementById("hepburnMacron");
+  const uppercase = document.getElementById("hepburnUppercase");
+  if (!input || !output) return;
+
+  output.textContent = convertHepburnText(
+    input.value,
+    !!macron?.checked,
+    !!uppercase?.checked
+  );
+  setHepburnStatus("");
+}
+
+function clearHepburnText() {
+  const input = document.getElementById("hepburnInput");
+  const output = document.getElementById("hepburnOutput");
+  if (input) input.value = "";
+  if (output) output.textContent = "";
+  setHepburnStatus("");
+  input?.focus();
+}
+
+async function copyHepburnOutput() {
+  const output = document.getElementById("hepburnOutput");
+  if (!output || !output.textContent) return;
+
+  try {
+    await navigator.clipboard.writeText(output.textContent);
+    setHepburnStatus(data[lang].hepburnCopied);
+  } catch (err) {
+    const range = document.createRange();
+    range.selectNodeContents(output);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    document.execCommand("copy");
+    selection.removeAllRanges();
+    setHepburnStatus(data[lang].hepburnCopied);
+  }
+}
+
+function initHepburnApp() {
+  const input = document.getElementById("hepburnInput");
+  if (!input) return;
+
+  const macron = document.getElementById("hepburnMacron");
+  const uppercase = document.getElementById("hepburnUppercase");
+
+  input.addEventListener("input", runHepburnConvert);
+  macron?.addEventListener("change", runHepburnConvert);
+  uppercase?.addEventListener("change", runHepburnConvert);
+  document.getElementById("hepburnConvertBtn")?.addEventListener("click", runHepburnConvert);
+  document.getElementById("hepburnCopyBtn")?.addEventListener("click", copyHepburnOutput);
+  document.getElementById("hepburnClearBtn")?.addEventListener("click", clearHepburnText);
+
+  runHepburnConvert();
 }
 
 /* =========================
