@@ -123,6 +123,8 @@ const data = {
     hepburnUppercaseLabel: "大文字で出力",
     hepburnNote: "主に標準的なヘボン式を想定しています。助詞の「は・へ」などは発音ではなく、入力された仮名をそのまま変換します。",
     tableDiff: "テーブル差分比較",
+    fullscreenEnter: "全画面表示にする",
+    fullscreenExit: "全画面表示を解除",
     settings: "設定",
     settingsBgTitle: "背景画像",
     settingsBgDesc: "デスクトップの背景に使う画像を選択してください。",
@@ -299,6 +301,8 @@ const data = {
     hepburnUppercaseLabel: "Output in uppercase",
     hepburnNote: "Assumes standard Hepburn romanization. Particles such as \u306f/\u3078 are converted as typed, not by pronunciation.",
     tableDiff: "Table Diff",
+    fullscreenEnter: "Enter Fullscreen",
+    fullscreenExit: "Exit Fullscreen",
     settings: "Settings",
     settingsBgTitle: "Desktop Background",
     settingsBgDesc: "Choose an image to use as the desktop background.",
@@ -963,6 +967,62 @@ document.addEventListener("click", e => {
     menu.style.display = "none";
   }
 });
+
+/* =========================
+   全画面表示トグル
+========================= */
+function isFullscreenActive() {
+  return !!(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.msFullscreenElement
+  );
+}
+
+function toggleFullscreen() {
+  const el = document.documentElement;
+
+  if (!isFullscreenActive()) {
+    if (el.requestFullscreen) {
+      el.requestFullscreen();
+    } else if (el.webkitRequestFullscreen) {
+      el.webkitRequestFullscreen();
+    } else if (el.msRequestFullscreen) {
+      el.msRequestFullscreen();
+    }
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen();
+  }
+}
+
+function updateFullscreenBtn() {
+  const btn = document.getElementById("fullscreenBtn");
+  if (!btn) return;
+
+  const d = data[lang];
+  const active = isFullscreenActive();
+
+  btn.textContent = active ? "🗗" : "⛶";
+  btn.title = active ? d.fullscreenExit : d.fullscreenEnter;
+  btn.classList.toggle("active", active);
+}
+
+function initFullscreenToggle() {
+  const btn = document.getElementById("fullscreenBtn");
+  if (!btn) return;
+
+  btn.addEventListener("click", toggleFullscreen);
+
+  ["fullscreenchange", "webkitfullscreenchange", "msfullscreenchange"].forEach(evt => {
+    document.addEventListener(evt, updateFullscreenBtn);
+  });
+
+  updateFullscreenBtn();
+}
 
 /* =========================
    アプリ起動
@@ -1823,6 +1883,16 @@ function render() {
     }
   });
 
+  document.querySelectorAll("[data-i18n-title]").forEach(el => {
+    const key = el.dataset.i18nTitle;
+
+    if (d[key] !== undefined) {
+      el.title = d[key];
+    }
+  });
+
+  updateFullscreenBtn();
+
   const notepadText = document.getElementById("notepadText");
   if (notepadText) {
     notepadText.placeholder = d.notepadPlaceholder;
@@ -2041,6 +2111,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initWindowControls();
   initWindowStates();
   updateTaskbar();
+  initFullscreenToggle();
 
   window.addEventListener("resize", updateDesktopIconRows);
 
