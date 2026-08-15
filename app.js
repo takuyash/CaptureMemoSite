@@ -78,13 +78,33 @@ const data = {
     qrDownloadBtn: "PNGをダウンロード",
     qrErrorTooLong: "文字数が多すぎてQRコードを生成できません",
     barcode: "バーコード",
+    barcodeTypeLabel: "規格",
     barcodeTextPlaceholder: "バーコードにしたい文字列を入力（半角英数・記号）",
+    barcodePlaceholder39: "例：CODE39-TEST",
+    barcodePlaceholderEAN13: "例：4901234567894",
+    barcodePlaceholderEAN8: "例：12345670",
+    barcodePlaceholderUPCA: "例：036000291452",
+    barcodePlaceholderITF: "例：123456",
+    barcodePlaceholderCodabar: "例：A123456A",
+    barcodeHint128: "任意の半角英数字・記号（ASCII 32〜126）を入力できます",
+    barcodeHint39: "半角英大文字（A〜Z）・数字（0〜9）と - . $ / + % スペースが使えます（小文字は自動で大文字に変換されます）",
+    barcodeHintEAN13: "12桁または13桁の数字を入力してください（13桁目はチェックデジットです）",
+    barcodeHintEAN8: "7桁または8桁の数字を入力してください（8桁目はチェックデジットです）",
+    barcodeHintUPCA: "11桁または12桁の数字を入力してください（12桁目はチェックデジットです）",
+    barcodeHintITF: "偶数桁の数字のみ入力できます",
+    barcodeHintCodabar: "数字と - $ : / . + が使えます。先頭と末尾はA〜Dのいずれかです（省略時は自動で付加されます）",
     barcodeBarWidthLabel: "バー幅",
     barcodeBarHeightLabel: "高さ",
     barcodeShowTextLabel: "コードを表示",
     barcodeEmptyText: "文字列を入力するとバーコードが表示されます",
     barcodeDownloadBtn: "PNGをダウンロード",
     barcodeErrorInvalid: "半角英数字・記号（ASCII 32〜126）のみ入力できます",
+    barcodeErrorInvalid39: "使用できるのは A〜Z、0〜9、- . $ / + % スペース のみです",
+    barcodeErrorEAN13: "12桁または13桁の数字を入力してください（チェックデジットが一致しない場合もこのメッセージが表示されます）",
+    barcodeErrorEAN8: "7桁または8桁の数字を入力してください（チェックデジットが一致しない場合もこのメッセージが表示されます）",
+    barcodeErrorUPCA: "11桁または12桁の数字を入力してください（チェックデジットが一致しない場合もこのメッセージが表示されます）",
+    barcodeErrorITF: "偶数桁の数字を入力してください",
+    barcodeErrorCodabar: "数字と - $ : / . + の文字列を入力してください（先頭・末尾のA〜Dは省略可）",
     stopwatch: "ストップウォッチ",
     stopwatchStart: "開始",
     stopwatchStop: "停止",
@@ -234,13 +254,33 @@ const data = {
     qrDownloadBtn: "Download PNG",
     qrErrorTooLong: "Text is too long to generate a QR code",
     barcode: "Barcode",
+    barcodeTypeLabel: "Type",
     barcodeTextPlaceholder: "Enter text to encode (ASCII letters, numbers, symbols)",
+    barcodePlaceholder39: "e.g. CODE39-TEST",
+    barcodePlaceholderEAN13: "e.g. 4901234567894",
+    barcodePlaceholderEAN8: "e.g. 12345670",
+    barcodePlaceholderUPCA: "e.g. 036000291452",
+    barcodePlaceholderITF: "e.g. 123456",
+    barcodePlaceholderCodabar: "e.g. A123456A",
+    barcodeHint128: "Any ASCII letters, numbers, or symbols (32\u2013126) are supported",
+    barcodeHint39: "Uppercase A\u2013Z, digits 0\u20139, and - . $ / + % space are supported (lowercase is auto-uppercased)",
+    barcodeHintEAN13: "Enter 12 or 13 digits (the 13th digit is the checksum)",
+    barcodeHintEAN8: "Enter 7 or 8 digits (the 8th digit is the checksum)",
+    barcodeHintUPCA: "Enter 11 or 12 digits (the 12th digit is the checksum)",
+    barcodeHintITF: "Only an even number of digits is supported",
+    barcodeHintCodabar: "Digits and - $ : / . + are supported. Start/stop must be A\u2013D (added automatically if omitted)",
     barcodeBarWidthLabel: "Bar Width",
     barcodeBarHeightLabel: "Height",
     barcodeShowTextLabel: "Show Text",
     barcodeEmptyText: "Enter text to generate a barcode",
     barcodeDownloadBtn: "Download PNG",
     barcodeErrorInvalid: "Only ASCII letters, numbers, and symbols (32\u2013126) are supported",
+    barcodeErrorInvalid39: "Only A\u2013Z, 0\u20139, - . $ / + % and space are supported",
+    barcodeErrorEAN13: "Enter 12 or 13 digits (also shown if the checksum digit doesn't match)",
+    barcodeErrorEAN8: "Enter 7 or 8 digits (also shown if the checksum digit doesn't match)",
+    barcodeErrorUPCA: "Enter 11 or 12 digits (also shown if the checksum digit doesn't match)",
+    barcodeErrorITF: "Enter an even number of digits",
+    barcodeErrorCodabar: "Enter digits and - $ : / . + (leading/trailing A\u2013D is optional)",
     stopwatch: "Stopwatch",
     stopwatchStart: "Start",
     stopwatchStop: "Stop",
@@ -1793,10 +1833,7 @@ function render() {
     qrText.placeholder = d.qrTextPlaceholder;
   }
 
-  const barcodeText = document.getElementById("barcodeText");
-  if (barcodeText) {
-    barcodeText.placeholder = d.barcodeTextPlaceholder;
-  }
+  updateBarcodeTypeUI();
 
   const hepburnInput = document.getElementById("hepburnInput");
   if (hepburnInput) {
@@ -3170,6 +3207,303 @@ function encodeCode128(text) {
   return symbolValues.map(v => CODE128_PATTERNS[v]).join("");
 }
 
+/* ---- CODE39 (Code 3 of 9) ----
+   各文字を10進値でエンコードし、2進数に変換するとナロー(1モジュール)/
+   ワイド(3モジュール)を表す15桁のバー/スペースパターンになる。
+   （出典: Code 39 の公開仕様に基づく標準的な符号化テーブル） */
+const CODE39_CHARS = [
+  "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+  "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+  "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+  "U", "V", "W", "X", "Y", "Z",
+  "-", ".", " ", "$", "/", "+", "%", "*"
+];
+const CODE39_ENCODINGS = [
+  20957, 29783, 23639, 30485, 20951, 29813, 23669, 20855, 29789, 23645,
+  29975, 23831, 30533, 22295, 30149, 24005, 21623, 29981, 23837, 22301,
+  30023, 23879, 30545, 22343, 30161, 24017, 21959, 30065, 23921, 22385,
+  29015, 18263, 29141, 17879, 29045, 18293,
+  17783, 29021, 18269, 17477, 17489, 17681, 20753, 35770
+];
+
+// 対応文字なら Code39 のバイナリパターン(文字列、開始/終了の*付き)を返し、
+// 非対応文字が含まれる場合は null を返す
+function encodeCode39(text) {
+  if (!text) return null;
+
+  const upper = text.toUpperCase();
+  const startStopIdx = CODE39_CHARS.indexOf("*");
+  let result = CODE39_ENCODINGS[startStopIdx].toString(2);
+
+  for (let i = 0; i < upper.length; i += 1) {
+    const ch = upper[i];
+    if (ch === "*") return null;
+    const idx = CODE39_CHARS.indexOf(ch);
+    if (idx === -1) return null;
+    result += CODE39_ENCODINGS[idx].toString(2) + "0";
+  }
+
+  result += CODE39_ENCODINGS[startStopIdx].toString(2);
+  return result;
+}
+
+/* ---- EAN-13 / EAN-8 / UPC-A ----
+   L(奇数パリティ)/G(偶数パリティ)/R(右側)の7ビットパターンと、
+   EAN-13の先頭数字に応じたL/G構成テーブル（標準的なEAN/UPC符号化仕様に基づく） */
+const EAN_SIDE_BIN = "101";
+const EAN_MIDDLE_BIN = "01010";
+const EAN_L = [
+  "0001101", "0011001", "0010011", "0111101", "0100011",
+  "0110001", "0101111", "0111011", "0110111", "0001011"
+];
+const EAN_G = [
+  "0100111", "0110011", "0011011", "0100001", "0011101",
+  "0111001", "0000101", "0010001", "0001001", "0010111"
+];
+const EAN_R = [
+  "1110010", "1100110", "1101100", "1000010", "1011100",
+  "1001110", "1010000", "1000100", "1001000", "1110100"
+];
+const EAN13_STRUCTURE = [
+  "LLLLLL", "LLGLGG", "LLGGLG", "LLGGGL", "LGLLGG",
+  "LGGLLG", "LGGGLL", "LGLGLG", "LGLGGL", "LGGLGL"
+];
+
+function ean13Checksum(digits12) {
+  let sum = 0;
+  for (let i = 0; i < 12; i += 1) {
+    const n = parseInt(digits12[i], 10);
+    sum += (i % 2 === 1) ? n * 3 : n;
+  }
+  return (10 - (sum % 10)) % 10;
+}
+
+// 12桁(チェックデジット自動計算)または13桁(チェックデジット検証)の数字から
+// EAN-13のバー/スペースパターンを返す。不正な場合は null
+function encodeEAN13(text) {
+  if (!/^[0-9]{12,13}$/.test(text)) return null;
+
+  let digits = text;
+  if (digits.length === 12) {
+    digits += String(ean13Checksum(digits));
+  } else if (parseInt(digits[12], 10) !== ean13Checksum(digits.slice(0, 12))) {
+    return null;
+  }
+
+  const structure = EAN13_STRUCTURE[parseInt(digits[0], 10)];
+  let left = "";
+  for (let i = 0; i < 6; i += 1) {
+    const d = parseInt(digits[1 + i], 10);
+    left += structure[i] === "L" ? EAN_L[d] : EAN_G[d];
+  }
+  let right = "";
+  for (let i = 0; i < 6; i += 1) {
+    right += EAN_R[parseInt(digits[7 + i], 10)];
+  }
+
+  return {
+    pattern: EAN_SIDE_BIN + left + EAN_MIDDLE_BIN + right + EAN_SIDE_BIN,
+    displayText: digits
+  };
+}
+
+function ean8Checksum(digits7) {
+  let sum = 0;
+  for (let i = 0; i < 7; i += 1) {
+    const n = parseInt(digits7[i], 10);
+    sum += (i % 2 === 1) ? n : n * 3;
+  }
+  return (10 - (sum % 10)) % 10;
+}
+
+// 7桁(チェックデジット自動計算)または8桁(チェックデジット検証)の数字から
+// EAN-8のバー/スペースパターンを返す。不正な場合は null
+function encodeEAN8(text) {
+  if (!/^[0-9]{7,8}$/.test(text)) return null;
+
+  let digits = text;
+  if (digits.length === 7) {
+    digits += String(ean8Checksum(digits));
+  } else if (parseInt(digits[7], 10) !== ean8Checksum(digits.slice(0, 7))) {
+    return null;
+  }
+
+  let left = "";
+  for (let i = 0; i < 4; i += 1) left += EAN_L[parseInt(digits[i], 10)];
+  let right = "";
+  for (let i = 0; i < 4; i += 1) right += EAN_R[parseInt(digits[4 + i], 10)];
+
+  return {
+    pattern: EAN_SIDE_BIN + left + EAN_MIDDLE_BIN + right + EAN_SIDE_BIN,
+    displayText: digits
+  };
+}
+
+function upcaChecksum(digits11) {
+  let sum = 0;
+  for (let i = 1; i < 11; i += 2) sum += parseInt(digits11[i], 10);
+  for (let i = 0; i < 11; i += 2) sum += parseInt(digits11[i], 10) * 3;
+  return (10 - (sum % 10)) % 10;
+}
+
+// 11桁(チェックデジット自動計算)または12桁(チェックデジット検証)の数字から
+// UPC-Aのバー/スペースパターンを返す。不正な場合は null
+function encodeUPCA(text) {
+  if (!/^[0-9]{11,12}$/.test(text)) return null;
+
+  let digits = text;
+  if (digits.length === 11) {
+    digits += String(upcaChecksum(digits));
+  } else if (parseInt(digits[11], 10) !== upcaChecksum(digits.slice(0, 11))) {
+    return null;
+  }
+
+  let left = "";
+  for (let i = 0; i < 6; i += 1) left += EAN_L[parseInt(digits[i], 10)];
+  let right = "";
+  for (let i = 0; i < 6; i += 1) right += EAN_R[parseInt(digits[6 + i], 10)];
+
+  return {
+    pattern: EAN_SIDE_BIN + left + EAN_MIDDLE_BIN + right + EAN_SIDE_BIN,
+    displayText: digits
+  };
+}
+
+/* ---- ITF (Interleaved 2 of 5) ----
+   2桁ずつ組にして、1桁目を黒バー・2桁目を白スペースに交互に割り当てる
+   （標準的なInterleaved 2 of 5符号化仕様に基づく） */
+const ITF_START_BIN = "1010";
+const ITF_END_BIN = "11101";
+const ITF_DIGIT_BIN = [
+  "00110", "10001", "01001", "11000", "00101",
+  "10100", "01100", "00011", "10010", "01010"
+];
+
+// 偶数桁の数字からITFのバー/スペースパターンを返す。不正な場合は null
+function encodeITF(text) {
+  if (!/^([0-9]{2})+$/.test(text)) return null;
+
+  let body = "";
+  for (let i = 0; i < text.length; i += 2) {
+    const first = ITF_DIGIT_BIN[parseInt(text[i], 10)];
+    const second = ITF_DIGIT_BIN[parseInt(text[i + 1], 10)];
+    for (let j = 0; j < 5; j += 1) {
+      body += first[j] === "1" ? "111" : "1";
+      body += second[j] === "1" ? "000" : "0";
+    }
+  }
+
+  return {
+    pattern: ITF_START_BIN + body + ITF_END_BIN,
+    displayText: text
+  };
+}
+
+/* ---- Codabar (NW-7) ----
+   数字と一部記号、開始/終了文字(A〜D)から成る
+   （標準的なCodabar符号化仕様に基づく） */
+const CODABAR_ENCODINGS = {
+  "0": "101010011", "1": "101011001", "2": "101001011", "3": "110010101", "4": "101101001",
+  "5": "110101001", "6": "100101011", "7": "100101101", "8": "100110101", "9": "110100101",
+  "-": "101001101", "$": "101100101", ":": "1101011011", "/": "1101101011", ".": "1101101101",
+  "+": "1011011011", "A": "1011001001", "B": "1001001011", "C": "1010010011", "D": "1010011001"
+};
+
+// Codabarのバー/スペースパターンを返す。開始/終了文字(A〜D)が省略されている
+// 場合は自動的に付加する。不正な場合は null
+function encodeCodabar(text) {
+  if (!text) return null;
+
+  let target = text.toUpperCase();
+  if (/^[0-9\-$:./+]+$/.test(target)) {
+    target = "A" + target + "A";
+  }
+  if (!/^[A-D][0-9\-$:./+]+[A-D]$/.test(target)) return null;
+
+  let result = "";
+  for (let i = 0; i < target.length; i += 1) {
+    result += CODABAR_ENCODINGS[target[i]];
+    if (i !== target.length - 1) result += "0";
+  }
+
+  return { pattern: result, displayText: target };
+}
+
+/* ---- バーコード規格レジストリ ----
+   各規格の符号化関数・エラーメッセージ/ヒント/プレースホルダーのi18nキーを
+   1つにまとめ、UIとgenerateBarcode()から共通で参照する */
+const BARCODE_FORMATS = {
+  code128: {
+    encode(text) {
+      const pattern = encodeCode128(text);
+      return pattern ? { pattern, displayText: text } : null;
+    },
+    errorKey: "barcodeErrorInvalid",
+    hintKey: "barcodeHint128",
+    placeholderKey: "barcodeTextPlaceholder"
+  },
+  code39: {
+    encode(text) {
+      const pattern = encodeCode39(text);
+      return pattern ? { pattern, displayText: text.toUpperCase() } : null;
+    },
+    errorKey: "barcodeErrorInvalid39",
+    hintKey: "barcodeHint39",
+    placeholderKey: "barcodePlaceholder39"
+  },
+  ean13: {
+    encode: encodeEAN13,
+    errorKey: "barcodeErrorEAN13",
+    hintKey: "barcodeHintEAN13",
+    placeholderKey: "barcodePlaceholderEAN13"
+  },
+  ean8: {
+    encode: encodeEAN8,
+    errorKey: "barcodeErrorEAN8",
+    hintKey: "barcodeHintEAN8",
+    placeholderKey: "barcodePlaceholderEAN8"
+  },
+  upca: {
+    encode: encodeUPCA,
+    errorKey: "barcodeErrorUPCA",
+    hintKey: "barcodeHintUPCA",
+    placeholderKey: "barcodePlaceholderUPCA"
+  },
+  itf: {
+    encode: encodeITF,
+    errorKey: "barcodeErrorITF",
+    hintKey: "barcodeHintITF",
+    placeholderKey: "barcodePlaceholderITF"
+  },
+  codabar: {
+    encode: encodeCodabar,
+    errorKey: "barcodeErrorCodabar",
+    hintKey: "barcodeHintCodabar",
+    placeholderKey: "barcodePlaceholderCodabar"
+  }
+};
+
+function getBarcodeFormat() {
+  const select = document.getElementById("barcodeType");
+  const key = select ? select.value : "code128";
+  return BARCODE_FORMATS[key] || BARCODE_FORMATS.code128;
+}
+
+// 選択中の規格に応じて入力欄のプレースホルダーとヒント文言を更新する
+function updateBarcodeTypeUI() {
+  const d = data[lang];
+  const format = getBarcodeFormat();
+  const input = document.getElementById("barcodeText");
+  const hint = document.getElementById("barcodeTypeHint");
+
+  if (input) {
+    input.placeholder = d[format.placeholderKey] || d.barcodeTextPlaceholder;
+  }
+  if (hint) {
+    hint.textContent = d[format.hintKey] || "";
+  }
+}
+
 function openBarcode() {
   registerWindowOpen("barcodeWindow");
 
@@ -3211,6 +3545,7 @@ function generateBarcode() {
   if (!input || !canvas || !preview) return;
 
   const text = input.value;
+  const format = getBarcodeFormat();
 
   if (!text) {
     preview.classList.remove("has-code");
@@ -3219,14 +3554,16 @@ function generateBarcode() {
     return;
   }
 
-  const pattern = encodeCode128(text);
+  const result = format.encode(text);
 
-  if (!pattern) {
+  if (!result) {
     preview.classList.remove("has-code");
     if (downloadBtn) downloadBtn.disabled = true;
-    setBarcodeStatus(data[lang].barcodeErrorInvalid);
+    setBarcodeStatus(data[lang][format.errorKey] || data[lang].barcodeErrorInvalid);
     return;
   }
+
+  const { pattern, displayText } = result;
 
   const moduleWidth = barWidthInput ? parseInt(barWidthInput.value, 10) || 2 : 2;
   const barHeight = barHeightInput ? parseInt(barHeightInput.value, 10) || 80 : 80;
@@ -3258,7 +3595,7 @@ function generateBarcode() {
     ctx.font = "14px 'Segoe UI', sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(text, canvasWidth / 2, barHeight + 6 + textHeight / 2, codeWidth);
+    ctx.fillText(displayText, canvasWidth / 2, barHeight + 6 + textHeight / 2, codeWidth);
   }
 
   preview.classList.add("has-code");
@@ -3270,10 +3607,13 @@ function downloadBarcode() {
   const canvas = document.getElementById("barcodeCanvas");
   if (!canvas) return;
 
+  const typeSelect = document.getElementById("barcodeType");
+  const type = typeSelect ? typeSelect.value : "code128";
+
   const url = canvas.toDataURL("image/png");
   const a = document.createElement("a");
   a.href = url;
-  a.download = "barcode.png";
+  a.download = `barcode-${type}.png`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -3281,6 +3621,7 @@ function downloadBarcode() {
 
 function initBarcodeApp() {
   const input = document.getElementById("barcodeText");
+  const typeSelect = document.getElementById("barcodeType");
   const barWidthInput = document.getElementById("barcodeBarWidth");
   const barHeightInput = document.getElementById("barcodeBarHeight");
   const showTextInput = document.getElementById("barcodeShowText");
@@ -3289,11 +3630,16 @@ function initBarcodeApp() {
   if (!input) return;
 
   input.addEventListener("input", generateBarcode);
+  typeSelect?.addEventListener("change", () => {
+    updateBarcodeTypeUI();
+    generateBarcode();
+  });
   barWidthInput?.addEventListener("input", generateBarcode);
   barHeightInput?.addEventListener("input", generateBarcode);
   showTextInput?.addEventListener("change", generateBarcode);
   downloadBtn?.addEventListener("click", downloadBarcode);
 
+  updateBarcodeTypeUI();
   generateBarcode();
 }
 

@@ -593,6 +593,19 @@
 
     <div class="barcode-body">
 
+      <label class="barcode-option-label barcode-type-label">
+        <span data-i18n="barcodeTypeLabel"></span>
+        <select id="barcodeType">
+          <option value="code128">CODE128</option>
+          <option value="code39">CODE39</option>
+          <option value="ean13">EAN-13</option>
+          <option value="ean8">EAN-8</option>
+          <option value="upca">UPC-A</option>
+          <option value="itf">ITF (Interleaved 2 of 5)</option>
+          <option value="codabar">Codabar (NW-7)</option>
+        </select>
+      </label>
+
       <input
         type="text"
         id="barcodeText"
@@ -600,6 +613,8 @@
         data-i18n-placeholder="barcodeTextPlaceholder"
         spellcheck="false"
       >
+
+      <p class="barcode-type-hint" id="barcodeTypeHint"></p>
 
       <div class="barcode-options">
         <label class="barcode-option-label">
