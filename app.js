@@ -540,6 +540,9 @@ const photoFiles = [
   { file: "assets/bg1.png", caption: "bg1.png" },
   { file: "assets/bg2.png", caption: "bg2.png" },
   { file: "assets/bg3.png", caption: "bg3.png" },
+  { file: "assets/bg4.png", caption: "bg4.png" },
+  { file: "assets/bg5.png", caption: "bg5.png" },
+  { file: "assets/bg6.png", caption: "bg6.png" },
   { file: "assets/download.png", caption: "download.png" },
   { file: "assets/execute.png", caption: "execute.png" },
   { file: "assets/thawing.png", caption: "thawing.png" }
