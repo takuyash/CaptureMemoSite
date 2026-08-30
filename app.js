@@ -413,6 +413,25 @@ const usageDescription = [
 
 const infos = [
   {
+    date: "2026-08-30",
+    title: {
+      ja: "CaptureMemo v0.7.0をリリースしました",
+      en: "CaptureMemo v0.7.0 Released"
+    },
+    body: {
+      ja: "・二重起動を防止<br>・タブをマウスオーバーして移動するとチカチカするためデザインの変更",
+      en: "Prevent duplicate application instances.<br>Changed the tab design to prevent flickering when moving the mouse over the tabs. "
+    },
+    link: {
+      url: "https://github.com/takuyash/CaptureMemo/releases",
+
+      label: {
+        ja: "GitHub Releases",
+        en: "GitHub Releases"
+      }
+    }
+  },
+  {
     date: "2026-06-07",
     title: {
       ja: "CaptureMemo v0.5.0をリリースしました",
